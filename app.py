@@ -1,9 +1,10 @@
 # app.py
-# BlackRock ESG Risk Analyzer
+# Project: ESG Analyst Briefing System for BlackRock
 # ISOM5240 Educational Prototype
 
 from __future__ import annotations
 
+import json
 import re
 from io import StringIO
 from pathlib import Path
@@ -15,7 +16,6 @@ import streamlit as st
 import torch
 from transformers import pipeline
 
-# Optional document extraction libraries
 try:
     from pypdf import PdfReader
 except ImportError:
@@ -31,8 +31,11 @@ except ImportError:
 # Page Configuration
 # =========================================================
 
+PROJECT_NAME = "AI-powered ESG Analyst Briefing System for BlackRock"
+APP_NAME = "BlackRock ESG Analyst Briefing System"
+
 st.set_page_config(
-    page_title="BlackRock ESG Risk Analyzer",
+    page_title=APP_NAME,
     page_icon="◌",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -74,9 +77,6 @@ st.markdown(
         --red-soft: #f2e5e3;
         --shadow: 0 18px 45px rgba(47, 48, 45, 0.08);
         --shadow-soft: 0 10px 25px rgba(47, 48, 45, 0.05);
-        --radius-lg: 28px;
-        --radius-md: 20px;
-        --radius-sm: 14px;
     }
 
     .stApp {
@@ -107,12 +107,10 @@ st.markdown(
         max-width: 1220px;
     }
 
-    /* Prevent sidebar from being visually used */
     section[data-testid="stSidebar"] {
         display: none;
     }
 
-    /* Buttons */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(135deg, #536a5f 0%, #6f8178 100%);
@@ -151,7 +149,6 @@ st.markdown(
         color: var(--ink);
     }
 
-    /* Inputs */
     textarea {
         min-height: 175px !important;
         border-radius: 22px !important;
@@ -173,7 +170,6 @@ st.markdown(
         padding: 1.2rem;
     }
 
-    /* Hero */
     .top-brand {
         display: flex;
         align-items: center;
@@ -281,7 +277,7 @@ st.markdown(
     }
 
     .hero-title {
-        font-size: clamp(2.25rem, 4.8vw, 4.5rem);
+        font-size: clamp(2.1rem, 4.7vw, 4.2rem);
         line-height: 0.96;
         font-weight: 780;
         letter-spacing: -0.07em;
@@ -293,7 +289,7 @@ st.markdown(
         font-size: 1.14rem;
         line-height: 1.55;
         color: var(--sage-deep);
-        max-width: 720px;
+        max-width: 760px;
         font-weight: 550;
         margin-bottom: 0.9rem;
     }
@@ -302,7 +298,7 @@ st.markdown(
         font-size: 0.98rem;
         line-height: 1.6;
         color: var(--ink-soft);
-        max-width: 720px;
+        max-width: 760px;
     }
 
     .workflow-card {
@@ -351,7 +347,6 @@ st.markdown(
         font-weight: 720;
     }
 
-    /* Context cards */
     .context-card {
         min-height: 132px;
         background: rgba(255,255,255,0.78);
@@ -391,7 +386,6 @@ st.markdown(
         color: var(--ink-soft);
     }
 
-    /* Input Studio */
     .input-studio {
         background: rgba(255, 255, 255, 0.84);
         border: 1px solid #e5e1d8;
@@ -504,7 +498,6 @@ st.markdown(
         padding: 0.75rem 0.85rem;
     }
 
-    /* Results */
     .result-shell {
         background: rgba(255,255,255,0.92);
         border: 1px solid var(--line);
@@ -515,11 +508,32 @@ st.markdown(
     }
 
     .result-title {
-        font-size: 1.55rem;
-        font-weight: 760;
+        font-size: 1.65rem;
+        font-weight: 780;
         letter-spacing: -0.04em;
         color: var(--ink);
         margin-bottom: 1rem;
+    }
+
+    .briefing-section {
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 1.05rem;
+        margin-top: 1rem;
+    }
+
+    .briefing-title {
+        color: var(--ink);
+        font-weight: 760;
+        margin-bottom: 0.55rem;
+        font-size: 1.02rem;
+    }
+
+    .briefing-text {
+        color: var(--ink-soft);
+        line-height: 1.62;
+        font-size: 0.94rem;
     }
 
     .metric-card {
@@ -541,7 +555,7 @@ st.markdown(
 
     .metric-value {
         color: var(--ink);
-        font-size: 1.35rem;
+        font-size: 1.28rem;
         font-weight: 760;
         letter-spacing: -0.04em;
         margin-bottom: 0.35rem;
@@ -593,25 +607,99 @@ st.markdown(
         margin-bottom: 0.2rem;
     }
 
-    .interpretation-card {
-        background: var(--bg-soft);
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 1.05rem;
-        margin-top: 1rem;
+    .breakdown-row {
+        display: grid;
+        grid-template-columns: 140px 1fr 70px;
+        gap: 0.75rem;
+        align-items: center;
+        margin: 0.55rem 0;
     }
 
-    .interpretation-title {
+    .breakdown-label {
         color: var(--ink);
-        font-weight: 730;
-        margin-bottom: 0.45rem;
-        font-size: 1rem;
+        font-size: 0.9rem;
+        font-weight: 620;
     }
 
-    .interpretation-text {
+    .breakdown-track {
+        height: 0.75rem;
+        border-radius: 999px;
+        background: #ede9df;
+        overflow: hidden;
+        border: 1px solid #e2ded5;
+    }
+
+    .breakdown-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #8fa891 0%, #b7c3ad 100%);
+        border-radius: 999px;
+    }
+
+    .breakdown-value {
         color: var(--ink-soft);
-        line-height: 1.62;
-        font-size: 0.94rem;
+        font-size: 0.86rem;
+        text-align: right;
+    }
+
+    .driver-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0.25rem 0.3rem 0.25rem 0;
+        padding: 0.45rem 0.65rem;
+        border-radius: 999px;
+        background: var(--sage-soft);
+        border: 1px solid rgba(174,184,162,0.45);
+        color: var(--ink-soft);
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+
+    .evidence-card {
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 0.9rem;
+        margin: 0.6rem 0;
+        color: var(--ink-soft);
+        line-height: 1.56;
+        font-size: 0.9rem;
+    }
+
+    .materiality-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+    }
+
+    .materiality-card {
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 0.85rem;
+    }
+
+    .materiality-label {
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .materiality-value {
+        color: var(--ink);
+        font-weight: 760;
+        font-size: 1.05rem;
+    }
+
+    .checklist-item {
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 0.75rem 0.85rem;
+        margin: 0.45rem 0;
+        color: var(--ink-soft);
+        line-height: 1.48;
+        font-size: 0.9rem;
     }
 
     .footer-note {
@@ -627,6 +715,14 @@ st.markdown(
         div[role="radiogroup"] {
             width: 100%;
         }
+
+        .materiality-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .breakdown-row {
+            grid-template-columns: 1fr;
+        }
     }
     </style>
     """,
@@ -639,11 +735,6 @@ st.markdown(
 # =========================================================
 
 def get_project_root() -> Path:
-    """
-    Locate the project root robustly.
-    app.py is expected to be inside 03_app, but the app should also work
-    when launched from project root or inside 03_app.
-    """
     try:
         file_path = Path(__file__).resolve()
         if file_path.parent.name == "03_app":
@@ -671,14 +762,12 @@ LOCAL_ESG_MODEL_DIR = PROJECT_ROOT / "04_models" / "blackrock_esg_classifier"
 # =========================================================
 
 def get_device() -> Tuple[int, str]:
-    """Return Hugging Face pipeline device ID and readable device name."""
     if torch.cuda.is_available():
         return 0, "GPU"
     return -1, "CPU"
 
 
 def clean_input_text(text: str) -> str:
-    """Clean user input by removing repeated spaces and line breaks."""
     if text is None:
         return ""
     text = str(text).strip()
@@ -687,9 +776,7 @@ def clean_input_text(text: str) -> str:
 
 
 def normalize_esg_label(label: str) -> str:
-    """Normalize ESG model output labels."""
     label = str(label).strip()
-
     mapping = {
         "Environmental": "Environmental",
         "environmental": "Environmental",
@@ -704,33 +791,20 @@ def normalize_esg_label(label: str) -> str:
         "Non ESG": "Non-ESG",
         "non esg": "Non-ESG",
     }
-
     return mapping.get(label, label)
 
 
 def normalize_sentiment_label(label: str) -> str:
-    """Normalize sentiment model output labels."""
     label = str(label).strip().lower()
-
     mapping = {
         "positive": "Positive",
         "neutral": "Neutral",
         "negative": "Negative",
     }
-
     return mapping.get(label, label.capitalize())
 
 
 def calculate_risk_level(esg_label: str, sentiment_label: str) -> str:
-    """
-    Rule-based ESG risk scoring.
-
-    Rule:
-    - Non-ESG -> Low
-    - ESG + Negative -> High
-    - ESG + Neutral -> Medium
-    - ESG + Positive -> Low
-    """
     esg_label = normalize_esg_label(esg_label)
     sentiment_label = normalize_sentiment_label(sentiment_label)
 
@@ -748,7 +822,6 @@ def calculate_risk_level(esg_label: str, sentiment_label: str) -> str:
 
 
 def format_pct(value: float) -> str:
-    """Format confidence score as percentage."""
     try:
         return f"{float(value) * 100:.2f}%"
     except Exception:
@@ -756,7 +829,6 @@ def format_pct(value: float) -> str:
 
 
 def risk_css_class(risk_level: str) -> str:
-    """Map risk level to CSS class."""
     if risk_level == "High":
         return "risk-high"
     if risk_level == "Medium":
@@ -764,65 +836,7 @@ def risk_css_class(risk_level: str) -> str:
     return "risk-low"
 
 
-def generate_risk_explanation(
-    esg_label: str,
-    sentiment_label: str,
-    risk_level: str,
-) -> str:
-    """Generate business-oriented interpretation for short text."""
-    if esg_label == "Non-ESG":
-        return (
-            "This text is classified as Non-ESG. Based on the screening logic, "
-            "it is not treated as an ESG-related risk signal. The final risk level "
-            "is Low for this input."
-        )
-
-    return (
-        f"This text is classified as {esg_label} and contains {sentiment_label} "
-        f"financial sentiment. Based on the project’s rule-based screening logic, "
-        f"it is flagged as {risk_level} ESG risk. The result should be used as an "
-        f"early-stage screening signal and reviewed together with supporting evidence."
-    )
-
-
-def get_recommended_action(risk_level: str) -> str:
-    """Return practical action statement without investment advice."""
-    if risk_level == "High":
-        return (
-            "Further analyst review is recommended before using this information "
-            "in ESG investment research."
-        )
-
-    if risk_level == "Medium":
-        return (
-            "Monitor the issue and review supporting company disclosures or external evidence."
-        )
-
-    return "No immediate ESG risk escalation is required based on this text."
-
-
-def get_document_recommended_action(overall_risk_level: str) -> str:
-    """Generate document-level recommended action without investment advice."""
-    if overall_risk_level == "High":
-        return (
-            "Further analyst review is recommended before using this information in ESG "
-            "investment research. Analysts should examine the original document sections "
-            "related to the dominant ESG topic and negative sentiment."
-        )
-
-    if overall_risk_level == "Medium":
-        return (
-            "Monitor the issue and review supporting company disclosures or external evidence."
-        )
-
-    return "No immediate ESG risk escalation is required based on this document."
-
-
 def safe_pipeline_predict(pipe, text: str, max_length: int = 512) -> Dict[str, Any]:
-    """
-    Run a Hugging Face text-classification pipeline safely.
-    Token-level truncation prevents transformer input length errors.
-    """
     return pipe(
         text,
         truncation=True,
@@ -835,7 +849,6 @@ def safe_pipeline_predict(pipe, text: str, max_length: int = 512) -> Dict[str, A
 # =========================================================
 
 def extract_text_from_pdf(uploaded_file) -> str:
-    """Extract text from uploaded PDF file."""
     if PdfReader is None:
         raise ImportError("pypdf is not installed. Please add pypdf to requirements.txt.")
 
@@ -851,7 +864,6 @@ def extract_text_from_pdf(uploaded_file) -> str:
 
 
 def extract_text_from_docx(uploaded_file) -> str:
-    """Extract text from uploaded Word document."""
     if Document is None:
         raise ImportError("python-docx is not installed. Please add python-docx to requirements.txt.")
 
@@ -861,9 +873,7 @@ def extract_text_from_docx(uploaded_file) -> str:
 
 
 def extract_text_from_txt(uploaded_file) -> str:
-    """Extract text from uploaded TXT file."""
     raw = uploaded_file.read()
-
     try:
         return raw.decode("utf-8")
     except UnicodeDecodeError:
@@ -871,7 +881,6 @@ def extract_text_from_txt(uploaded_file) -> str:
 
 
 def extract_text_from_uploaded_file(uploaded_file) -> str:
-    """Detect file type and extract text."""
     file_name = uploaded_file.name.lower()
 
     if file_name.endswith(".pdf"):
@@ -892,10 +901,6 @@ def extract_text_from_uploaded_file(uploaded_file) -> str:
 
 @st.cache_resource(show_spinner=False)
 def load_esg_pipeline():
-    """
-    Load local fine-tuned ESG model if available.
-    Fallback to FinBERT-ESG baseline if local model is unavailable.
-    """
     device, device_name = get_device()
 
     local_model_loaded = False
@@ -926,7 +931,6 @@ def load_esg_pipeline():
 
 @st.cache_resource(show_spinner=False)
 def load_sentiment_pipeline():
-    """Load financial sentiment analysis pipeline."""
     device, device_name = get_device()
 
     sentiment_pipe = pipeline(
@@ -940,15 +944,232 @@ def load_sentiment_pipeline():
 
 
 # =========================================================
+# Analyst Briefing Logic
+# =========================================================
+
+RISK_KEYWORDS = {
+    "Environmental": [
+        "carbon emissions", "greenhouse gas", "climate risk", "pollution",
+        "waste", "water usage", "biodiversity", "deforestation",
+        "fossil fuel", "scope 1", "scope 2", "scope 3",
+        "renewable energy", "net zero", "climate disclosure",
+        "emissions", "decarbonization", "climate transition",
+    ],
+    "Social": [
+        "labor", "worker safety", "workplace safety", "diversity",
+        "discrimination", "harassment", "privacy", "human rights",
+        "supply chain", "employee injury", "community", "product safety",
+        "employee safety", "customer privacy", "workforce",
+    ],
+    "Governance": [
+        "bribery", "corruption", "board oversight", "internal controls",
+        "audit", "compliance", "executive compensation", "shareholder",
+        "greenwashing", "misleading disclosure", "regulatory scrutiny",
+        "board independence", "governance", "fraud", "ethics",
+    ],
+}
+
+
+def extract_risk_drivers(text: str) -> List[Dict[str, str]]:
+    text_lower = clean_input_text(text).lower()
+    drivers = []
+
+    for category, keywords in RISK_KEYWORDS.items():
+        for keyword in keywords:
+            if keyword.lower() in text_lower:
+                drivers.append({"category": category, "keyword": keyword})
+
+    seen = set()
+    unique_drivers = []
+
+    for item in drivers:
+        key = (item["category"], item["keyword"])
+        if key not in seen:
+            seen.add(key)
+            unique_drivers.append(item)
+
+    return unique_drivers[:12]
+
+
+def get_evidence_highlights(results_df: pd.DataFrame, max_items: int = 3) -> List[str]:
+    if results_df.empty:
+        return []
+
+    priority_df = results_df.copy()
+    priority_df["priority_score"] = 0
+    priority_df.loc[priority_df["risk_level"] == "High", "priority_score"] += 3
+    priority_df.loc[priority_df["sentiment"] == "Negative", "priority_score"] += 2
+    priority_df.loc[priority_df["esg_category"] != "Non-ESG", "priority_score"] += 1
+
+    priority_df = priority_df.sort_values(
+        by=["priority_score", "esg_confidence", "sentiment_confidence"],
+        ascending=[False, False, False],
+    )
+
+    highlights = []
+    for _, row in priority_df.head(max_items).iterrows():
+        snippet = str(row["chunk_text"])[:380]
+        if len(str(row["chunk_text"])) > 380:
+            snippet += "..."
+        highlights.append(snippet)
+
+    return highlights
+
+
+def build_materiality_assessment(
+    top_esg_category: str,
+    dominant_sentiment: str,
+    overall_risk: str,
+) -> Dict[str, str]:
+    assessment = {
+        "Regulatory Exposure": "Low",
+        "Reputation Risk": "Low",
+        "Operational Risk": "Low",
+        "Disclosure Quality Concern": "Low",
+    }
+
+    if overall_risk == "High":
+        if top_esg_category == "Environmental":
+            assessment["Regulatory Exposure"] = "High"
+            assessment["Reputation Risk"] = "Medium"
+            assessment["Operational Risk"] = "Medium"
+            assessment["Disclosure Quality Concern"] = "High"
+        elif top_esg_category == "Social":
+            assessment["Regulatory Exposure"] = "Medium"
+            assessment["Reputation Risk"] = "High"
+            assessment["Operational Risk"] = "Medium"
+            assessment["Disclosure Quality Concern"] = "Medium"
+        elif top_esg_category == "Governance":
+            assessment["Regulatory Exposure"] = "High"
+            assessment["Reputation Risk"] = "High"
+            assessment["Operational Risk"] = "Medium"
+            assessment["Disclosure Quality Concern"] = "High"
+
+    elif overall_risk == "Medium":
+        assessment["Regulatory Exposure"] = "Medium" if dominant_sentiment == "Negative" else "Low"
+        assessment["Reputation Risk"] = "Medium"
+        assessment["Operational Risk"] = "Low"
+        assessment["Disclosure Quality Concern"] = "Medium"
+
+    return assessment
+
+
+def build_analyst_checklist(overall_risk: str, top_esg_category: str) -> List[str]:
+    checklist = [
+        "Review the original source sections related to the detected ESG topic.",
+        "Check whether the issue is recurring or a one-off event.",
+        "Compare the company’s disclosure with peer companies.",
+        "Verify whether regulators, auditors, NGOs, or media sources have raised similar concerns.",
+        "Check whether management has provided remediation plans or measurable targets.",
+    ]
+
+    if top_esg_category == "Environmental":
+        checklist.append(
+            "Review emissions targets, climate transition plans, and Scope 1, 2, and 3 disclosure quality."
+        )
+    elif top_esg_category == "Social":
+        checklist.append(
+            "Review labor practices, safety records, diversity policies, supply chain controls, and privacy incidents."
+        )
+    elif top_esg_category == "Governance":
+        checklist.append(
+            "Review board oversight, audit controls, compliance policies, executive compensation, and shareholder rights."
+        )
+
+    return checklist
+
+
+def build_confidence_interpretation(avg_esg_conf: float, avg_sent_conf: float) -> str:
+    average_confidence = np.nanmean([avg_esg_conf, avg_sent_conf])
+
+    if average_confidence >= 0.85:
+        signal = "Strong model signal"
+    elif average_confidence >= 0.65:
+        signal = "Moderate model signal"
+    else:
+        signal = "Low model signal"
+
+    return (
+        f"{signal}. The output should be treated as an ESG screening signal, "
+        f"not as a final ESG rating. Analysts should review the original source text "
+        f"and supporting evidence before drawing conclusions."
+    )
+
+
+def build_executive_summary(summary: Dict[str, Any]) -> str:
+    risk = summary.get("overall_risk_level", "N/A")
+    category = summary.get("top_esg_category", "N/A")
+    sentiment = summary.get("dominant_sentiment", "N/A")
+    high_count = summary.get("high_risk_chunks", 0)
+
+    if risk == "High":
+        return (
+            f"The document shows a High ESG risk profile, primarily driven by {category} issues "
+            f"and {sentiment} sentiment. The screening process detected {high_count} high-risk "
+            f"internal segment(s), suggesting that the source contains potentially material ESG "
+            f"risk signals. Further analyst review is recommended before using this information "
+            f"in ESG investment research."
+        )
+
+    if risk == "Medium":
+        return (
+            f"The document shows a Medium ESG risk profile, with the dominant ESG topic classified "
+            f"as {category} and the dominant sentiment classified as {sentiment}. The content may "
+            f"warrant monitoring and follow-up review, especially if the issue is recurring or "
+            f"supported by external evidence."
+        )
+
+    return (
+        f"The document shows a Low ESG risk profile based on the analyzed text. The dominant ESG "
+        f"topic is {category}, and the dominant sentiment is {sentiment}. No immediate ESG risk "
+        f"escalation is indicated by this screening output."
+    )
+
+
+def build_decision_support_note() -> str:
+    return (
+        "This result can help analysts prioritize ESG documents for deeper review. "
+        "It does not determine investment suitability and does not provide investment advice."
+    )
+
+
+def distribution_dict(series: pd.Series) -> Dict[str, Dict[str, float]]:
+    counts = series.value_counts().to_dict()
+    total = max(int(series.count()), 1)
+
+    output = {}
+    for label, count in counts.items():
+        output[label] = {
+            "count": int(count),
+            "share": float(count / total),
+        }
+    return output
+
+
+def choose_dominant_sentiment(sentiments: pd.Series) -> str:
+    counts = sentiments.value_counts().to_dict()
+    if not counts:
+        return "Neutral"
+
+    max_count = max(counts.values())
+    tied = [label for label, count in counts.items() if count == max_count]
+
+    for preferred in ["Negative", "Neutral", "Positive"]:
+        if preferred in tied:
+            return preferred
+
+    return tied[0]
+
+
+# =========================================================
 # Analysis Logic
 # =========================================================
 
 def analyze_text(input_text: str) -> Dict[str, Any]:
-    """Analyze short input text using ESG and sentiment pipelines."""
     cleaned_text = clean_input_text(input_text)
 
     if not cleaned_text:
-        raise ValueError("Input text is empty. Please paste an ESG-related paragraph.")
+        raise ValueError("Input text is empty. Please paste ESG-related text.")
 
     esg_pipe, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
     sentiment_pipe, sentiment_model_name, _ = load_sentiment_pipeline()
@@ -958,28 +1179,33 @@ def analyze_text(input_text: str) -> Dict[str, Any]:
 
     esg_category = normalize_esg_label(esg_result.get("label", ""))
     esg_confidence = float(esg_result.get("score", np.nan))
-
     sentiment = normalize_sentiment_label(sentiment_result.get("label", ""))
     sentiment_confidence = float(sentiment_result.get("score", np.nan))
-
     risk_level = calculate_risk_level(esg_category, sentiment)
-    risk_explanation = generate_risk_explanation(esg_category, sentiment, risk_level)
-    recommended_action = get_recommended_action(risk_level)
 
-    return {
-        "input_text": cleaned_text,
-        "esg_category": esg_category,
-        "esg_confidence": esg_confidence,
-        "sentiment": sentiment,
-        "sentiment_confidence": sentiment_confidence,
-        "risk_level": risk_level,
-        "risk_explanation": risk_explanation,
-        "recommended_action": recommended_action,
-        "esg_model_name": esg_model_name,
-        "sentiment_model_name": sentiment_model_name,
-        "local_model_loaded": local_model_loaded,
-        "device": device_name,
-    }
+    results_df = pd.DataFrame(
+        [
+            {
+                "chunk_id": 1,
+                "chunk_text": cleaned_text,
+                "chunk_preview": cleaned_text[:220],
+                "word_count": len(cleaned_text.split()),
+                "esg_category": esg_category,
+                "esg_confidence": esg_confidence,
+                "sentiment": sentiment,
+                "sentiment_confidence": sentiment_confidence,
+                "risk_level": risk_level,
+            }
+        ]
+    )
+
+    summary = build_document_summary(results_df, total_words=len(cleaned_text.split()))
+    summary["esg_model_name"] = esg_model_name
+    summary["sentiment_model_name"] = sentiment_model_name
+    summary["device"] = device_name
+    summary["local_model_loaded"] = local_model_loaded
+
+    return summary
 
 
 def split_text_into_chunks(
@@ -988,12 +1214,6 @@ def split_text_into_chunks(
     overlap_words: int = 30,
     max_chunks: int = 80,
 ) -> List[str]:
-    """
-    Split long text into model-safe chunks.
-
-    Uses a word-based sliding window. Each chunk is small enough to fit
-    within transformer token limits, with token-level truncation as backup.
-    """
     cleaned = clean_input_text(text)
     words = cleaned.split()
 
@@ -1005,15 +1225,14 @@ def split_text_into_chunks(
 
     chunks = []
     step = max(max_words - overlap_words, 1)
-
     start = 0
+
     while start < len(words) and len(chunks) < max_chunks:
         end = min(start + max_words, len(words))
         chunk_words = words[start:end]
-        chunk = " ".join(chunk_words)
 
         if len(chunk_words) >= 20:
-            chunks.append(chunk)
+            chunks.append(" ".join(chunk_words))
 
         if end >= len(words):
             break
@@ -1024,7 +1243,6 @@ def split_text_into_chunks(
 
 
 def analyze_single_chunk(chunk_text: str, chunk_id: int) -> Dict[str, Any]:
-    """Analyze one document chunk."""
     esg_pipe, _, _, _ = load_esg_pipeline()
     sentiment_pipe, _, _ = load_sentiment_pipeline()
 
@@ -1033,10 +1251,8 @@ def analyze_single_chunk(chunk_text: str, chunk_id: int) -> Dict[str, Any]:
 
     esg_category = normalize_esg_label(esg_result.get("label", ""))
     esg_confidence = float(esg_result.get("score", np.nan))
-
     sentiment = normalize_sentiment_label(sentiment_result.get("label", ""))
     sentiment_confidence = float(sentiment_result.get("score", np.nan))
-
     risk_level = calculate_risk_level(esg_category, sentiment)
 
     preview = chunk_text[:220] + "..." if len(chunk_text) > 220 else chunk_text
@@ -1054,30 +1270,9 @@ def analyze_single_chunk(chunk_text: str, chunk_id: int) -> Dict[str, Any]:
     }
 
 
-def choose_dominant_sentiment(sentiments: pd.Series) -> str:
-    """
-    Choose dominant sentiment.
-    In a tie, prioritize Negative, then Neutral, then Positive.
-    """
-    counts = sentiments.value_counts().to_dict()
-
-    if not counts:
-        return "Neutral"
-
-    max_count = max(counts.values())
-    tied = [label for label, count in counts.items() if count == max_count]
-
-    for preferred in ["Negative", "Neutral", "Positive"]:
-        if preferred in tied:
-            return preferred
-
-    return tied[0]
-
-
 def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[str, Any]:
-    """Build overall document-level ESG evaluation from chunk-level outputs."""
     if results_df.empty:
-        return {
+        base_summary = {
             "total_words": total_words,
             "chunks_analyzed": 0,
             "overall_risk_level": "Low",
@@ -1088,14 +1283,14 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             "high_risk_chunks": 0,
             "medium_risk_chunks": 0,
             "low_risk_chunks": 0,
-            "overall_interpretation": (
-                "No analyzable ESG content was detected in the submitted document."
-            ),
+            "overall_interpretation": "No analyzable ESG content was detected in the submitted document.",
             "recommended_action": "No immediate ESG risk escalation is required based on this document.",
         }
+        base_summary["executive_summary"] = build_executive_summary(base_summary)
+        base_summary["decision_support_note"] = build_decision_support_note()
+        return base_summary
 
     risk_counts = results_df["risk_level"].value_counts().to_dict()
-
     high_risk_chunks = int(risk_counts.get("High", 0))
     medium_risk_chunks = int(risk_counts.get("Medium", 0))
     low_risk_chunks = int(risk_counts.get("Low", 0))
@@ -1108,14 +1303,12 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         overall_risk_level = "Low"
 
     esg_only = results_df[results_df["esg_category"] != "Non-ESG"]
-
     if len(esg_only) > 0:
         top_esg_category = esg_only["esg_category"].value_counts().idxmax()
     else:
         top_esg_category = "Non-ESG"
 
     dominant_sentiment = choose_dominant_sentiment(results_df["sentiment"])
-
     average_esg_confidence = float(results_df["esg_confidence"].mean())
     average_sentiment_confidence = float(results_df["sentiment_confidence"].mean())
 
@@ -1126,14 +1319,14 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             f"Based on the project’s rule-based screening logic, the overall ESG risk "
             f"level is High because the document contains negative ESG-related signals. "
             f"The result should be used as an early-stage screening signal and reviewed "
-            f"together with supporting evidence and additional analyst judgment."
+            f"together with supporting evidence and analyst judgment."
         )
     elif overall_risk_level == "Medium":
         overall_interpretation = (
             f"This document contains ESG-related content, primarily associated with "
             f"{top_esg_category}. The dominant sentiment is {dominant_sentiment}. "
-            f"The overall ESG risk level is Medium, suggesting that analysts should "
-            f"monitor the issue and review supporting company disclosures or external evidence."
+            f"The overall ESG risk level is Medium, suggesting that analysts should monitor "
+            f"the issue and review supporting company disclosures or external evidence."
         )
     else:
         overall_interpretation = (
@@ -1142,9 +1335,21 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             f"the document does not indicate immediate ESG risk escalation."
         )
 
-    recommended_action = get_document_recommended_action(overall_risk_level)
+    all_text = " ".join(results_df["chunk_text"].astype(str).tolist())
+    risk_driver_keywords = extract_risk_drivers(all_text)
+    evidence_highlights = get_evidence_highlights(results_df, max_items=3)
+    materiality_assessment = build_materiality_assessment(
+        top_esg_category,
+        dominant_sentiment,
+        overall_risk_level,
+    )
+    analyst_checklist = build_analyst_checklist(overall_risk_level, top_esg_category)
+    confidence_interpretation = build_confidence_interpretation(
+        average_esg_confidence,
+        average_sentiment_confidence,
+    )
 
-    return {
+    summary = {
         "total_words": total_words,
         "chunks_analyzed": int(len(results_df)),
         "overall_risk_level": overall_risk_level,
@@ -1156,8 +1361,20 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         "medium_risk_chunks": medium_risk_chunks,
         "low_risk_chunks": low_risk_chunks,
         "overall_interpretation": overall_interpretation,
-        "recommended_action": recommended_action,
+        "recommended_action": get_document_recommended_action(overall_risk_level),
+        "esg_category_distribution": distribution_dict(results_df["esg_category"]),
+        "sentiment_distribution": distribution_dict(results_df["sentiment"]),
+        "risk_driver_keywords": risk_driver_keywords,
+        "evidence_highlights": evidence_highlights,
+        "materiality_assessment": materiality_assessment,
+        "analyst_checklist": analyst_checklist,
+        "confidence_interpretation": confidence_interpretation,
+        "decision_support_note": build_decision_support_note(),
     }
+
+    summary["executive_summary"] = build_executive_summary(summary)
+
+    return summary
 
 
 def analyze_long_document(
@@ -1166,10 +1383,6 @@ def analyze_long_document(
     overlap_words: int = 30,
     max_chunks: int = 80,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
-    """
-    Analyze long document internally by chunks.
-    Only overall summary should be shown to the user.
-    """
     cleaned_text = clean_input_text(text)
     total_words = len(cleaned_text.split())
 
@@ -1181,14 +1394,13 @@ def analyze_long_document(
     )
 
     rows = []
-
     progress = st.progress(0)
     status = st.empty()
 
     for idx, chunk in enumerate(chunks, start=1):
         status.write(f"Analyzing internal segment {idx} of {len(chunks)}...")
         rows.append(analyze_single_chunk(chunk, chunk_id=idx))
-        progress.progress(idx / len(chunks))
+        progress.progress(idx / max(len(chunks), 1))
 
     status.empty()
     progress.empty()
@@ -1196,15 +1408,22 @@ def analyze_long_document(
     results_df = pd.DataFrame(rows)
     summary = build_document_summary(results_df, total_words=total_words)
 
+    esg_pipe, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
+    sentiment_pipe, sentiment_model_name, _ = load_sentiment_pipeline()
+
+    summary["esg_model_name"] = esg_model_name
+    summary["sentiment_model_name"] = sentiment_model_name
+    summary["device"] = device_name
+    summary["local_model_loaded"] = local_model_loaded
+
     return results_df, summary
 
 
 # =========================================================
-# Rendering Functions
+# Rendering Helpers
 # =========================================================
 
 def render_top_brand() -> None:
-    """Render brand row."""
     st.markdown(
         """
         <div class="top-brand">
@@ -1212,7 +1431,7 @@ def render_top_brand() -> None:
                 <div class="brand-mark">◒</div>
                 <div>
                     <div class="brand-text-main">BlackRock</div>
-                    <div class="brand-text-sub">ESG Risk Analyzer</div>
+                    <div class="brand-text-sub">ESG Analyst Briefing System</div>
                 </div>
             </div>
             <div class="prototype-pill">Educational Prototype</div>
@@ -1223,24 +1442,23 @@ def render_top_brand() -> None:
 
 
 def render_hero() -> None:
-    """Render hero section."""
     st.markdown('<div class="hero-shell">', unsafe_allow_html=True)
 
     left, right = st.columns([1.75, 1], gap="large")
 
     with left:
         st.markdown(
-            """
+            f"""
             <div class="hero-content">
                 <div class="eyebrow">ESG investment research assistant</div>
-                <div class="hero-title">BlackRock ESG Risk Analyzer</div>
+                <div class="hero-title">{APP_NAME}</div>
                 <div class="hero-subtitle">
-                    AI-powered ESG screening for investment research
+                    AI-powered ESG analyst briefing for investment research
                 </div>
                 <div class="hero-description">
                     Use deep learning pipelines to classify corporate text into ESG topics,
-                    detect financial sentiment, and generate an explainable ESG risk level
-                    for early-stage analyst review.
+                    detect financial sentiment, generate an explainable ESG risk level,
+                    and produce a practical analyst briefing for early-stage review.
                 </div>
             </div>
             """,
@@ -1251,23 +1469,11 @@ def render_hero() -> None:
         st.markdown(
             """
             <div class="workflow-card">
-                <div class="workflow-title">ESG Screening Workflow</div>
-                <div class="workflow-step">
-                    <div class="step-index">1</div>
-                    <div>Input corporate text or upload document</div>
-                </div>
-                <div class="workflow-step">
-                    <div class="step-index">2</div>
-                    <div>Classify ESG topic</div>
-                </div>
-                <div class="workflow-step">
-                    <div class="step-index">3</div>
-                    <div>Detect financial sentiment</div>
-                </div>
-                <div class="workflow-step">
-                    <div class="step-index">4</div>
-                    <div>Generate overall risk level</div>
-                </div>
+                <div class="workflow-title">ESG Briefing Workflow</div>
+                <div class="workflow-step"><div class="step-index">1</div><div>Input text or upload document</div></div>
+                <div class="workflow-step"><div class="step-index">2</div><div>Classify ESG topic and sentiment</div></div>
+                <div class="workflow-step"><div class="step-index">3</div><div>Assess ESG risk drivers</div></div>
+                <div class="workflow-step"><div class="step-index">4</div><div>Generate analyst briefing</div></div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1277,7 +1483,6 @@ def render_hero() -> None:
 
 
 def render_context_cards() -> None:
-    """Render purpose, models, risk rule, and disclaimer cards."""
     _, device_name = get_device()
 
     c1, c2, c3, c4 = st.columns(4, gap="medium")
@@ -1290,8 +1495,7 @@ def render_context_cards() -> None:
                 <div>
                     <div class="context-title">Purpose</div>
                     <div class="context-text">
-                        ESG document screening for investment research.
-                        Identify ESG topics, sentiment, and potential risk signals.
+                        Convert ESG documents into practical analyst briefings for research screening.
                     </div>
                 </div>
             </div>
@@ -1323,12 +1527,12 @@ def render_context_cards() -> None:
             <div class="context-card">
                 <div class="context-icon">◇</div>
                 <div>
-                    <div class="context-title">Risk Rule</div>
+                    <div class="context-title">Risk Logic</div>
                     <div class="context-text">
-                        Non-ESG → Low<br>
                         ESG + Negative → High<br>
                         ESG + Neutral → Medium<br>
-                        ESG + Positive → Low
+                        ESG + Positive → Low<br>
+                        Non-ESG → Low
                     </div>
                 </div>
             </div>
@@ -1344,8 +1548,7 @@ def render_context_cards() -> None:
                 <div>
                     <div class="context-title">Disclaimer</div>
                     <div class="context-text">
-                        Educational prototype only. This application supports ESG
-                        risk screening and does not provide investment advice.
+                        Educational prototype only. Supports ESG screening and does not provide investment advice.
                     </div>
                 </div>
             </div>
@@ -1355,7 +1558,6 @@ def render_context_cards() -> None:
 
 
 def render_advanced_settings() -> Tuple[int, int, int]:
-    """Render advanced analysis settings and return values."""
     with st.expander("Advanced analysis settings", expanded=False):
         max_words = st.slider(
             "Words per internal segment",
@@ -1363,7 +1565,6 @@ def render_advanced_settings() -> Tuple[int, int, int]:
             max_value=220,
             value=180,
             step=10,
-            help="Smaller segments reduce model input errors. Larger segments preserve more context.",
         )
 
         overlap_words = st.slider(
@@ -1372,7 +1573,6 @@ def render_advanced_settings() -> Tuple[int, int, int]:
             max_value=50,
             value=30,
             step=5,
-            help="Overlap helps preserve context between adjacent segments.",
         )
 
         max_chunks = st.slider(
@@ -1381,226 +1581,83 @@ def render_advanced_settings() -> Tuple[int, int, int]:
             max_value=120,
             value=80,
             step=10,
-            help="Limits runtime for very long documents.",
         )
 
     return max_words, overlap_words, max_chunks
 
 
-def render_single_text_results(result: Dict[str, Any]) -> None:
-    """Render analysis result for short text."""
-    st.markdown('<div class="result-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="result-title">Overall Analysis Results</div>', unsafe_allow_html=True)
-
-    m1, m2, m3, m4, m5 = st.columns(5, gap="small")
-
-    with m1:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Overall ESG Risk</div>
-                <div class="metric-value">{result["risk_level"]}</div>
-                <div class="metric-caption">Overall assessment</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with m2:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Top ESG Category</div>
-                <div class="metric-value">{result["esg_category"]}</div>
-                <div class="metric-caption">Dominant ESG topic</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with m3:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Financial Sentiment</div>
-                <div class="metric-value">{result["sentiment"]}</div>
-                <div class="metric-caption">Detected sentiment</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with m4:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">ESG Confidence</div>
-                <div class="metric-value">{format_pct(result["esg_confidence"])}</div>
-                <div class="metric-caption">Classifier confidence</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with m5:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Sentiment Confidence</div>
-                <div class="metric-value">{format_pct(result["sentiment_confidence"])}</div>
-                <div class="metric-caption">Sentiment confidence</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    risk_class = risk_css_class(result["risk_level"])
+def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], labels: List[str]) -> None:
     st.markdown(
         f"""
-        <div class="risk-card {risk_class}">
-            <div class="risk-label">Final ESG Risk Level</div>
-            <div class="risk-value">{result["risk_level"]}</div>
-            <div class="interpretation-text">
-                Generated from ESG category and financial sentiment using the project’s
-                rule-based screening logic.
-            </div>
-        </div>
+        <div class="briefing-section">
+            <div class="briefing-title">{title}</div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        f"""
-        <div class="interpretation-card">
-            <div class="interpretation-title">Business Interpretation</div>
-            <div class="interpretation-text">{result["risk_explanation"]}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    for label in labels:
+        item = distribution.get(label, {"count": 0, "share": 0.0})
+        share = item["share"]
+        count = item["count"]
+        width = max(share * 100, 1 if count > 0 else 0)
 
-    st.markdown(
-        f"""
-        <div class="interpretation-card">
-            <div class="interpretation-title">Recommended Action</div>
-            <div class="interpretation-text">{result["recommended_action"]}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    download_df = pd.DataFrame(
-        [
-            {
-                "input_text": result["input_text"],
-                "esg_category": result["esg_category"],
-                "esg_confidence": result["esg_confidence"],
-                "sentiment": result["sentiment"],
-                "sentiment_confidence": result["sentiment_confidence"],
-                "risk_level": result["risk_level"],
-                "risk_explanation": result["risk_explanation"],
-                "recommended_action": result["recommended_action"],
-            }
-        ]
-    )
-
-    csv_buffer = StringIO()
-    download_df.to_csv(csv_buffer, index=False)
-
-    st.download_button(
-        label="Download Overall Summary as CSV",
-        data=csv_buffer.getvalue(),
-        file_name="overall_esg_summary.csv",
-        mime="text/csv",
-    )
-
-    st.caption(
-        f"ESG model: {result['esg_model_name']} · "
-        f"Sentiment model: {result['sentiment_model_name']} · "
-        f"Device: {result['device']}"
-    )
+        st.markdown(
+            f"""
+            <div class="breakdown-row">
+                <div class="breakdown-label">{label}</div>
+                <div class="breakdown-track">
+                    <div class="breakdown-fill" style="width: {width:.2f}%;"></div>
+                </div>
+                <div class="breakdown-value">{share * 100:.1f}% ({count})</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-def render_overall_document_results(summary: Dict[str, Any]) -> None:
-    """Render only overall document-level ESG evaluation."""
-    st.markdown('<div class="result-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="result-title">Overall Analysis Results</div>', unsafe_allow_html=True)
-
+def render_metric_cards(summary: Dict[str, Any]) -> None:
     c1, c2, c3, c4, c5, c6 = st.columns(6, gap="small")
 
-    with c1:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Overall ESG Risk</div>
-                <div class="metric-value">{summary.get("overall_risk_level", "N/A")}</div>
-                <div class="metric-caption">Overall assessment</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    metrics = [
+        ("Overall ESG Risk", summary.get("overall_risk_level", "N/A"), "Risk profile"),
+        ("Top ESG Category", summary.get("top_esg_category", "N/A"), "Dominant topic"),
+        ("Dominant Sentiment", summary.get("dominant_sentiment", "N/A"), "Tone of document"),
+        ("Estimated Words", f"{summary.get('total_words', 0):,}", "Words analyzed"),
+        ("ESG Confidence", format_pct(summary.get("average_esg_confidence", 0)), "Avg. ESG signal"),
+        ("Sentiment Confidence", format_pct(summary.get("average_sentiment_confidence", 0)), "Avg. sentiment signal"),
+    ]
 
-    with c2:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Top ESG Category</div>
-                <div class="metric-value">{summary.get("top_esg_category", "N/A")}</div>
-                <div class="metric-caption">Dominant ESG topic</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    for col, (label, value, caption) in zip([c1, c2, c3, c4, c5, c6], metrics):
+        with col:
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-label">{label}</div>
+                    <div class="metric-value">{value}</div>
+                    <div class="metric-caption">{caption}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-    with c3:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Financial Sentiment</div>
-                <div class="metric-value">{summary.get("dominant_sentiment", "N/A")}</div>
-                <div class="metric-caption">Dominant sentiment</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
-    with c4:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">ESG Confidence</div>
-                <div class="metric-value">{format_pct(summary.get("average_esg_confidence", 0))}</div>
-                <div class="metric-caption">Average confidence</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
+    st.markdown('<div class="result-shell">', unsafe_allow_html=True)
+    st.markdown('<div class="result-title">ESG Analyst Briefing</div>', unsafe_allow_html=True)
 
-    with c5:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Sentiment Confidence</div>
-                <div class="metric-value">{format_pct(summary.get("average_sentiment_confidence", 0))}</div>
-                <div class="metric-caption">Average confidence</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        f"""
+        <div class="briefing-section">
+            <div class="briefing-title">Executive ESG Summary</div>
+            <div class="briefing-text">{summary.get("executive_summary", "")}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    with c6:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <div class="metric-label">Estimated Words</div>
-                <div class="metric-value">{summary.get("total_words", 0):,}</div>
-                <div class="metric-caption">Words analyzed</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    render_metric_cards(summary)
 
     risk_level = summary.get("overall_risk_level", "Low")
     risk_class = risk_css_class(risk_level)
@@ -1608,12 +1665,110 @@ def render_overall_document_results(summary: Dict[str, Any]) -> None:
     st.markdown(
         f"""
         <div class="risk-card {risk_class}">
-            <div class="risk-label">Final ESG Risk Level</div>
+            <div class="risk-label">Overall ESG Risk Level</div>
             <div class="risk-value">{risk_level}</div>
-            <div class="interpretation-text">
-                The document is analyzed internally in smaller model-safe segments.
-                Only the overall evaluation is shown to support a concise research workflow.
+            <div class="briefing-text">
+                This score is generated from ESG classification, financial sentiment, and rule-based risk screening.
             </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    b1, b2 = st.columns(2, gap="medium")
+
+    with b1:
+        render_distribution(
+            "ESG Risk Breakdown",
+            summary.get("esg_category_distribution", {}),
+            ["Environmental", "Social", "Governance", "Non-ESG"],
+        )
+
+    with b2:
+        render_distribution(
+            "Sentiment Breakdown",
+            summary.get("sentiment_distribution", {}),
+            ["Negative", "Neutral", "Positive"],
+        )
+
+    drivers = summary.get("risk_driver_keywords", [])
+    driver_html = ""
+
+    if drivers:
+        for item in drivers:
+            driver_html += (
+                f'<span class="driver-pill">{item.get("category", "")}: '
+                f'{item.get("keyword", "")}</span>'
+            )
+    else:
+        driver_html = '<div class="briefing-text">No major rule-based ESG risk keywords were detected.</div>'
+
+    st.markdown(
+        f"""
+        <div class="briefing-section">
+            <div class="briefing-title">Key Risk Drivers</div>
+            {driver_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    evidence = summary.get("evidence_highlights", [])
+    evidence_html = ""
+
+    if evidence:
+        for snippet in evidence:
+            evidence_html += f'<div class="evidence-card">“{snippet}”</div>'
+    else:
+        evidence_html = '<div class="briefing-text">No strong evidence snippets were selected.</div>'
+
+    st.markdown(
+        f"""
+        <div class="briefing-section">
+            <div class="briefing-title">Evidence Highlights</div>
+            {evidence_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    materiality = summary.get("materiality_assessment", {})
+    materiality_html = ""
+
+    for key in [
+        "Regulatory Exposure",
+        "Reputation Risk",
+        "Operational Risk",
+        "Disclosure Quality Concern",
+    ]:
+        materiality_html += (
+            f'<div class="materiality-card">'
+            f'<div class="materiality-label">{key}</div>'
+            f'<div class="materiality-value">{materiality.get(key, "Low")}</div>'
+            f'</div>'
+        )
+
+    st.markdown(
+        f"""
+        <div class="briefing-section">
+            <div class="briefing-title">Materiality Assessment</div>
+            <div class="materiality-grid">{materiality_html}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    checklist = summary.get("analyst_checklist", [])
+    checklist_html = ""
+
+    for item in checklist:
+        checklist_html += f'<div class="checklist-item">□ {item}</div>'
+
+    st.markdown(
+        f"""
+        <div class="briefing-section">
+            <div class="briefing-title">Analyst Review Checklist</div>
+            {checklist_html}
         </div>
         """,
         unsafe_allow_html=True,
@@ -1621,11 +1776,9 @@ def render_overall_document_results(summary: Dict[str, Any]) -> None:
 
     st.markdown(
         f"""
-        <div class="interpretation-card">
-            <div class="interpretation-title">Business Interpretation</div>
-            <div class="interpretation-text">
-                {summary.get("overall_interpretation", "")}
-            </div>
+        <div class="briefing-section">
+            <div class="briefing-title">Confidence and Limitations</div>
+            <div class="briefing-text">{summary.get("confidence_interpretation", "")}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1633,45 +1786,52 @@ def render_overall_document_results(summary: Dict[str, Any]) -> None:
 
     st.markdown(
         f"""
-        <div class="interpretation-card">
-            <div class="interpretation-title">Recommended Action</div>
-            <div class="interpretation-text">
-                {summary.get("recommended_action", "")}
-            </div>
+        <div class="briefing-section">
+            <div class="briefing-title">Decision Support Note</div>
+            <div class="briefing-text">{summary.get("decision_support_note", "")}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    summary_df = pd.DataFrame([summary])
+    download_summary = summary.copy()
+    for key in [
+        "esg_category_distribution",
+        "sentiment_distribution",
+        "risk_driver_keywords",
+        "evidence_highlights",
+        "materiality_assessment",
+        "analyst_checklist",
+    ]:
+        download_summary[key] = json.dumps(download_summary.get(key, ""), ensure_ascii=False)
+
+    summary_df = pd.DataFrame([download_summary])
+    csv_buffer = StringIO()
+    summary_df.to_csv(csv_buffer, index=False)
 
     st.download_button(
-        label="Download Overall Summary as CSV",
-        data=summary_df.to_csv(index=False),
-        file_name="overall_esg_summary.csv",
+        label="Download ESG Briefing as CSV",
+        data=csv_buffer.getvalue(),
+        file_name="esg_analyst_briefing.csv",
         mime="text/csv",
     )
 
     st.caption(
-        "Long documents are split and analyzed internally to support 10,000+ word inputs "
-        "and avoid transformer token limits. Chunk-level details are not displayed."
+        f"ESG model: {summary.get('esg_model_name', 'N/A')} · "
+        f"Sentiment model: {summary.get('sentiment_model_name', 'N/A')} · "
+        f"Device: {summary.get('device', 'N/A')}"
     )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =========================================================
-# Main App Layout
+# Main Layout
 # =========================================================
 
 render_top_brand()
 render_hero()
 render_context_cards()
-
-
-# =========================================================
-# Refined Input Studio
-# =========================================================
 
 st.markdown(
     """
@@ -1679,7 +1839,7 @@ st.markdown(
         <div class="input-studio-title">Start an ESG Screening</div>
         <div class="input-studio-subtitle">
             Choose a source type, then provide ESG-related text or upload a document.
-            The app will generate an overall ESG risk evaluation for investment research screening.
+            The app will generate an ESG analyst briefing for investment research screening.
         </div>
         <div class="mode-caption">Choose analysis source</div>
     """,
@@ -1700,14 +1860,12 @@ if input_mode == "Paste Text":
         """
         <div class="module-title-row">
             <div class="module-icon">✎</div>
-            <div>
-                <div class="module-title">Paste ESG-related text</div>
-            </div>
+            <div><div class="module-title">Paste ESG-related text</div></div>
         </div>
         <div class="module-subtitle">
             Paste one ESG-relevant paragraph, article excerpt, or full report text.
             Long content will be analyzed internally in smaller model-safe segments,
-            while only the overall evaluation is shown.
+            while only the ESG analyst briefing is shown.
         </div>
         """,
         unsafe_allow_html=True,
@@ -1734,8 +1892,7 @@ if input_mode == "Paste Text":
     )
 
     max_words, overlap_words, max_chunks = render_advanced_settings()
-
-    analyze_text_clicked = st.button("Analyze Text", type="primary")
+    analyze_text_clicked = st.button("Generate ESG Analyst Briefing", type="primary")
 
     if analyze_text_clicked:
         cleaned_input = clean_input_text(input_text)
@@ -1750,10 +1907,10 @@ if input_mode == "Paste Text":
                     st.info(
                         f"Large text detected: approximately {word_count:,} words. "
                         f"The app will analyze up to {max_chunks} internal segments "
-                        f"and show only the overall evaluation."
+                        f"and show only the ESG analyst briefing."
                     )
 
-                with st.spinner("Analyzing long text and generating overall ESG evaluation..."):
+                with st.spinner("Analyzing long text and generating ESG analyst briefing..."):
                     _, summary = analyze_long_document(
                         cleaned_input,
                         max_words=max_words,
@@ -1761,13 +1918,13 @@ if input_mode == "Paste Text":
                         max_chunks=max_chunks,
                     )
 
-                render_overall_document_results(summary)
+                render_esg_analyst_briefing(summary)
 
             else:
-                with st.spinner("Analyzing ESG topic, financial sentiment, and risk level..."):
-                    result = analyze_text(cleaned_input)
+                with st.spinner("Analyzing text and generating ESG analyst briefing..."):
+                    summary = analyze_text(cleaned_input)
 
-                render_single_text_results(result)
+                render_esg_analyst_briefing(summary)
 
 
 elif input_mode == "Upload PDF / Word":
@@ -1775,14 +1932,12 @@ elif input_mode == "Upload PDF / Word":
         """
         <div class="module-title-row">
             <div class="module-icon">↥</div>
-            <div>
-                <div class="module-title">Upload an ESG document</div>
-            </div>
+            <div><div class="module-title">Upload an ESG document</div></div>
         </div>
         <div class="module-subtitle">
             Upload a PDF, Word document, or TXT file. The app will extract the text,
             analyze the document internally in smaller model-safe segments, and return
-            only the overall ESG evaluation.
+            a concise ESG analyst briefing.
         </div>
         """,
         unsafe_allow_html=True,
@@ -1795,8 +1950,7 @@ elif input_mode == "Upload PDF / Word":
     )
 
     max_words, overlap_words, max_chunks = render_advanced_settings()
-
-    analyze_doc_clicked = st.button("Analyze Document", type="primary")
+    analyze_doc_clicked = st.button("Generate ESG Analyst Briefing", type="primary")
 
     if analyze_doc_clicked:
         if uploaded_file is None:
@@ -1816,10 +1970,10 @@ elif input_mode == "Upload PDF / Word":
                         st.info(
                             f"Large document detected: approximately {total_words:,} words. "
                             f"The app will analyze up to {max_chunks} internal segments "
-                            f"and show only the overall evaluation."
+                            f"and show only the ESG analyst briefing."
                         )
 
-                    with st.spinner("Analyzing document and generating overall ESG evaluation..."):
+                    with st.spinner("Analyzing document and generating ESG analyst briefing..."):
                         _, summary = analyze_long_document(
                             extracted_text,
                             max_words=max_words,
@@ -1827,7 +1981,7 @@ elif input_mode == "Upload PDF / Word":
                             max_chunks=max_chunks,
                         )
 
-                    render_overall_document_results(summary)
+                    render_esg_analyst_briefing(summary)
 
             except Exception as exc:
                 st.error("The uploaded document could not be analyzed.")
@@ -1835,11 +1989,6 @@ elif input_mode == "Upload PDF / Word":
 
 st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
-
-
-# =========================================================
-# Footer
-# =========================================================
 
 st.markdown(
     """
