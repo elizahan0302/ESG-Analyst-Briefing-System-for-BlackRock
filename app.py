@@ -1,5 +1,5 @@
 # app.py
-# Project: ESG Analyst Briefing System for BlackRock
+# Project: AI-powered ESG Analyst Briefing System for BlackRock
 # ISOM5240 Educational Prototype
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ except ImportError:
 # =========================================================
 
 PROJECT_NAME = "AI-powered ESG Analyst Briefing System for BlackRock"
-APP_NAME = "BlackRock ESG Analyst Briefing System"
+APP_NAME = "ESG Analyst Briefing System"
 
 st.set_page_config(
     page_title=APP_NAME,
@@ -43,9 +43,7 @@ st.set_page_config(
 
 
 # =========================================================
-# Design System
-# Muted / Pastel / Monochromatic
-# Neo-minimalism + Card-based Layered UI
+# CSS Design System
 # =========================================================
 
 st.markdown(
@@ -55,25 +53,14 @@ st.markdown(
         --bg: #f6f4f0;
         --bg-soft: #fbfaf7;
         --card: #ffffff;
-        --card-muted: #f2f0ea;
         --ink: #2f302d;
         --ink-soft: #5f625b;
         --muted: #8b8e86;
         --line: #e5e1d8;
-        --line-strong: #d7d2c6;
-        --sage: #aeb8a2;
-        --sage-deep: #526459;
-        --sage-dark: #536a5f;
         --sage-soft: #e9eee4;
-        --clay: #c8b8a6;
-        --clay-soft: #efe7dd;
-        --stone: #d7d4cd;
-        --stone-soft: #f1efeb;
-        --green: #8fa891;
+        --sage-dark: #536a5f;
         --green-soft: #e6eee5;
-        --amber: #b9a16b;
         --amber-soft: #f4eedc;
-        --red: #b7837f;
         --red-soft: #f2e5e3;
         --shadow: 0 18px 45px rgba(47, 48, 45, 0.08);
         --shadow-soft: 0 10px 25px rgba(47, 48, 45, 0.05);
@@ -136,17 +123,10 @@ st.markdown(
         width: 100%;
         background: #f8f6f1;
         color: var(--ink);
-        border: 1px solid var(--line-strong);
+        border: 1px solid #d7d2c6;
         border-radius: 16px;
         padding: 0.82rem 1.1rem;
         font-weight: 620;
-        transition: all 0.18s ease;
-    }
-
-    div.stDownloadButton > button:hover {
-        background: #efebe2;
-        border-color: var(--ink-soft);
-        color: var(--ink);
     }
 
     textarea {
@@ -244,17 +224,6 @@ st.markdown(
         border-radius: 50%;
     }
 
-    .hero-shell:after {
-        content: "";
-        position: absolute;
-        width: 260px;
-        height: 260px;
-        right: 130px;
-        bottom: -145px;
-        background: rgba(200, 184, 166, 0.20);
-        border-radius: 50%;
-    }
-
     .hero-content {
         position: relative;
         z-index: 1;
@@ -263,7 +232,6 @@ st.markdown(
     .eyebrow {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
         padding: 0.35rem 0.75rem;
         border: 1px solid rgba(47,48,45,0.10);
         border-radius: 999px;
@@ -277,7 +245,7 @@ st.markdown(
     }
 
     .hero-title {
-        font-size: clamp(2.1rem, 4.7vw, 4.2rem);
+        font-size: clamp(2.25rem, 4.8vw, 4.4rem);
         line-height: 0.96;
         font-weight: 780;
         letter-spacing: -0.07em;
@@ -288,7 +256,7 @@ st.markdown(
     .hero-subtitle {
         font-size: 1.14rem;
         line-height: 1.55;
-        color: var(--sage-deep);
+        color: var(--sage-dark);
         max-width: 760px;
         font-weight: 550;
         margin-bottom: 0.9rem;
@@ -334,7 +302,6 @@ st.markdown(
     }
 
     .step-index {
-        flex: 0 0 auto;
         width: 1.6rem;
         height: 1.6rem;
         border-radius: 999px;
@@ -345,10 +312,13 @@ st.markdown(
         color: var(--ink);
         font-size: 0.78rem;
         font-weight: 720;
+        flex: 0 0 auto;
     }
 
     .context-card {
-        min-height: 132px;
+        height: 168px;
+        min-height: 168px;
+        max-height: 168px;
         background: rgba(255,255,255,0.78);
         border: 1px solid var(--line);
         border-radius: 24px;
@@ -357,13 +327,14 @@ st.markdown(
         display: flex;
         gap: 1rem;
         align-items: flex-start;
+        overflow: hidden;
     }
 
     .context-icon {
         width: 3.2rem;
         height: 3.2rem;
         border-radius: 999px;
-        background: var(--stone-soft);
+        background: #f1efeb;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -381,8 +352,8 @@ st.markdown(
     }
 
     .context-text {
-        font-size: 0.88rem;
-        line-height: 1.52;
+        font-size: 0.86rem;
+        line-height: 1.45;
         color: var(--ink-soft);
     }
 
@@ -450,7 +421,6 @@ st.markdown(
         border: 1px solid #e5e1d8;
         border-radius: 26px;
         padding: 1.25rem;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
     }
 
     .module-title-row {
@@ -492,7 +462,8 @@ st.markdown(
         color: #7a7d75;
         line-height: 1.45;
         margin-top: 0.65rem;
-        background: var(--stone-soft);
+        margin-bottom: 1rem;
+        background: #f1efeb;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 0.75rem 0.85rem;
@@ -575,20 +546,9 @@ st.markdown(
         border: 1px solid var(--line);
     }
 
-    .risk-low {
-        background: var(--green-soft);
-        border-color: rgba(143,168,145,0.45);
-    }
-
-    .risk-medium {
-        background: var(--amber-soft);
-        border-color: rgba(185,161,107,0.45);
-    }
-
-    .risk-high {
-        background: var(--red-soft);
-        border-color: rgba(183,131,127,0.45);
-    }
+    .risk-low { background: var(--green-soft); }
+    .risk-medium { background: var(--amber-soft); }
+    .risk-high { background: var(--red-soft); }
 
     .risk-label {
         font-size: 0.78rem;
@@ -712,6 +672,12 @@ st.markdown(
     }
 
     @media (max-width: 900px) {
+        .context-card {
+            height: auto;
+            min-height: 150px;
+            max-height: none;
+        }
+
         div[role="radiogroup"] {
             width: 100%;
         }
@@ -758,7 +724,7 @@ LOCAL_ESG_MODEL_DIR = PROJECT_ROOT / "04_models" / "blackrock_esg_classifier"
 
 
 # =========================================================
-# Utility Functions
+# Basic Utilities
 # =========================================================
 
 def get_device() -> Tuple[int, str]:
@@ -944,7 +910,7 @@ def load_sentiment_pipeline():
 
 
 # =========================================================
-# Analyst Briefing Logic
+# ESG Briefing Logic
 # =========================================================
 
 RISK_KEYWORDS = {
@@ -968,6 +934,23 @@ RISK_KEYWORDS = {
         "board independence", "governance", "fraud", "ethics",
     ],
 }
+
+
+def get_document_recommended_action(overall_risk_level: str) -> str:
+    """Generate document-level recommended action without investment advice."""
+    if overall_risk_level == "High":
+        return (
+            "Further analyst review is recommended before using this information in ESG "
+            "investment research. Analysts should examine the original document sections "
+            "related to the dominant ESG topic and negative sentiment."
+        )
+
+    if overall_risk_level == "Medium":
+        return (
+            "Monitor the issue and review supporting company disclosures or external evidence."
+        )
+
+    return "No immediate ESG risk escalation is required based on this document."
 
 
 def extract_risk_drivers(text: str) -> List[Dict[str, str]]:
@@ -1096,6 +1079,42 @@ def build_confidence_interpretation(avg_esg_conf: float, avg_sent_conf: float) -
     )
 
 
+def build_decision_support_note() -> str:
+    return (
+        "This result can help analysts prioritize ESG documents for deeper review. "
+        "It does not determine investment suitability and does not provide investment advice."
+    )
+
+
+def distribution_dict(series: pd.Series) -> Dict[str, Dict[str, float]]:
+    counts = series.value_counts().to_dict()
+    total = max(int(series.count()), 1)
+
+    output = {}
+    for label, count in counts.items():
+        output[label] = {
+            "count": int(count),
+            "share": float(count / total),
+        }
+    return output
+
+
+def choose_dominant_sentiment(sentiments: pd.Series) -> str:
+    counts = sentiments.value_counts().to_dict()
+
+    if not counts:
+        return "Neutral"
+
+    max_count = max(counts.values())
+    tied = [label for label, count in counts.items() if count == max_count]
+
+    for preferred in ["Negative", "Neutral", "Positive"]:
+        if preferred in tied:
+            return preferred
+
+    return tied[0]
+
+
 def build_executive_summary(summary: Dict[str, Any]) -> str:
     risk = summary.get("overall_risk_level", "N/A")
     category = summary.get("top_esg_category", "N/A")
@@ -1126,87 +1145,9 @@ def build_executive_summary(summary: Dict[str, Any]) -> str:
     )
 
 
-def build_decision_support_note() -> str:
-    return (
-        "This result can help analysts prioritize ESG documents for deeper review. "
-        "It does not determine investment suitability and does not provide investment advice."
-    )
-
-
-def distribution_dict(series: pd.Series) -> Dict[str, Dict[str, float]]:
-    counts = series.value_counts().to_dict()
-    total = max(int(series.count()), 1)
-
-    output = {}
-    for label, count in counts.items():
-        output[label] = {
-            "count": int(count),
-            "share": float(count / total),
-        }
-    return output
-
-
-def choose_dominant_sentiment(sentiments: pd.Series) -> str:
-    counts = sentiments.value_counts().to_dict()
-    if not counts:
-        return "Neutral"
-
-    max_count = max(counts.values())
-    tied = [label for label, count in counts.items() if count == max_count]
-
-    for preferred in ["Negative", "Neutral", "Positive"]:
-        if preferred in tied:
-            return preferred
-
-    return tied[0]
-
-
 # =========================================================
 # Analysis Logic
 # =========================================================
-
-def analyze_text(input_text: str) -> Dict[str, Any]:
-    cleaned_text = clean_input_text(input_text)
-
-    if not cleaned_text:
-        raise ValueError("Input text is empty. Please paste ESG-related text.")
-
-    esg_pipe, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
-    sentiment_pipe, sentiment_model_name, _ = load_sentiment_pipeline()
-
-    esg_result = safe_pipeline_predict(esg_pipe, cleaned_text, max_length=512)
-    sentiment_result = safe_pipeline_predict(sentiment_pipe, cleaned_text, max_length=512)
-
-    esg_category = normalize_esg_label(esg_result.get("label", ""))
-    esg_confidence = float(esg_result.get("score", np.nan))
-    sentiment = normalize_sentiment_label(sentiment_result.get("label", ""))
-    sentiment_confidence = float(sentiment_result.get("score", np.nan))
-    risk_level = calculate_risk_level(esg_category, sentiment)
-
-    results_df = pd.DataFrame(
-        [
-            {
-                "chunk_id": 1,
-                "chunk_text": cleaned_text,
-                "chunk_preview": cleaned_text[:220],
-                "word_count": len(cleaned_text.split()),
-                "esg_category": esg_category,
-                "esg_confidence": esg_confidence,
-                "sentiment": sentiment,
-                "sentiment_confidence": sentiment_confidence,
-                "risk_level": risk_level,
-            }
-        ]
-    )
-
-    summary = build_document_summary(results_df, total_words=len(cleaned_text.split()))
-    summary["esg_model_name"] = esg_model_name
-    summary["sentiment_model_name"] = sentiment_model_name
-    summary["device"] = device_name
-    summary["local_model_loaded"] = local_model_loaded
-
-    return summary
-
 
 def split_text_into_chunks(
     text: str,
@@ -1251,8 +1192,10 @@ def analyze_single_chunk(chunk_text: str, chunk_id: int) -> Dict[str, Any]:
 
     esg_category = normalize_esg_label(esg_result.get("label", ""))
     esg_confidence = float(esg_result.get("score", np.nan))
+
     sentiment = normalize_sentiment_label(sentiment_result.get("label", ""))
     sentiment_confidence = float(sentiment_result.get("score", np.nan))
+
     risk_level = calculate_risk_level(esg_category, sentiment)
 
     preview = chunk_text[:220] + "..." if len(chunk_text) > 220 else chunk_text
@@ -1272,7 +1215,7 @@ def analyze_single_chunk(chunk_text: str, chunk_id: int) -> Dict[str, Any]:
 
 def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[str, Any]:
     if results_df.empty:
-        base_summary = {
+        summary = {
             "total_words": total_words,
             "chunks_analyzed": 0,
             "overall_risk_level": "Low",
@@ -1284,11 +1227,18 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             "medium_risk_chunks": 0,
             "low_risk_chunks": 0,
             "overall_interpretation": "No analyzable ESG content was detected in the submitted document.",
-            "recommended_action": "No immediate ESG risk escalation is required based on this document.",
+            "recommended_action": get_document_recommended_action("Low"),
+            "esg_category_distribution": {},
+            "sentiment_distribution": {},
+            "risk_driver_keywords": [],
+            "evidence_highlights": [],
+            "materiality_assessment": build_materiality_assessment("Non-ESG", "Neutral", "Low"),
+            "analyst_checklist": build_analyst_checklist("Low", "Non-ESG"),
+            "confidence_interpretation": build_confidence_interpretation(0.0, 0.0),
+            "decision_support_note": build_decision_support_note(),
         }
-        base_summary["executive_summary"] = build_executive_summary(base_summary)
-        base_summary["decision_support_note"] = build_decision_support_note()
-        return base_summary
+        summary["executive_summary"] = build_executive_summary(summary)
+        return summary
 
     risk_counts = results_df["risk_level"].value_counts().to_dict()
     high_risk_chunks = int(risk_counts.get("High", 0))
@@ -1303,6 +1253,7 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         overall_risk_level = "Low"
 
     esg_only = results_df[results_df["esg_category"] != "Non-ESG"]
+
     if len(esg_only) > 0:
         top_esg_category = esg_only["esg_category"].value_counts().idxmax()
     else:
@@ -1336,18 +1287,6 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         )
 
     all_text = " ".join(results_df["chunk_text"].astype(str).tolist())
-    risk_driver_keywords = extract_risk_drivers(all_text)
-    evidence_highlights = get_evidence_highlights(results_df, max_items=3)
-    materiality_assessment = build_materiality_assessment(
-        top_esg_category,
-        dominant_sentiment,
-        overall_risk_level,
-    )
-    analyst_checklist = build_analyst_checklist(overall_risk_level, top_esg_category)
-    confidence_interpretation = build_confidence_interpretation(
-        average_esg_confidence,
-        average_sentiment_confidence,
-    )
 
     summary = {
         "total_words": total_words,
@@ -1364,11 +1303,18 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         "recommended_action": get_document_recommended_action(overall_risk_level),
         "esg_category_distribution": distribution_dict(results_df["esg_category"]),
         "sentiment_distribution": distribution_dict(results_df["sentiment"]),
-        "risk_driver_keywords": risk_driver_keywords,
-        "evidence_highlights": evidence_highlights,
-        "materiality_assessment": materiality_assessment,
-        "analyst_checklist": analyst_checklist,
-        "confidence_interpretation": confidence_interpretation,
+        "risk_driver_keywords": extract_risk_drivers(all_text),
+        "evidence_highlights": get_evidence_highlights(results_df, max_items=3),
+        "materiality_assessment": build_materiality_assessment(
+            top_esg_category,
+            dominant_sentiment,
+            overall_risk_level,
+        ),
+        "analyst_checklist": build_analyst_checklist(overall_risk_level, top_esg_category),
+        "confidence_interpretation": build_confidence_interpretation(
+            average_esg_confidence,
+            average_sentiment_confidence,
+        ),
         "decision_support_note": build_decision_support_note(),
     }
 
@@ -1394,6 +1340,7 @@ def analyze_long_document(
     )
 
     rows = []
+
     progress = st.progress(0)
     status = st.empty()
 
@@ -1408,8 +1355,8 @@ def analyze_long_document(
     results_df = pd.DataFrame(rows)
     summary = build_document_summary(results_df, total_words=total_words)
 
-    esg_pipe, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
-    sentiment_pipe, sentiment_model_name, _ = load_sentiment_pipeline()
+    _, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
+    _, sentiment_model_name, _ = load_sentiment_pipeline()
 
     summary["esg_model_name"] = esg_model_name
     summary["sentiment_model_name"] = sentiment_model_name
@@ -1419,8 +1366,54 @@ def analyze_long_document(
     return results_df, summary
 
 
+def analyze_text(input_text: str) -> Dict[str, Any]:
+    cleaned_text = clean_input_text(input_text)
+
+    if not cleaned_text:
+        raise ValueError("Input text is empty. Please paste ESG-related text.")
+
+    esg_pipe, esg_model_name, local_model_loaded, device_name = load_esg_pipeline()
+    sentiment_pipe, sentiment_model_name, _ = load_sentiment_pipeline()
+
+    esg_result = safe_pipeline_predict(esg_pipe, cleaned_text, max_length=512)
+    sentiment_result = safe_pipeline_predict(sentiment_pipe, cleaned_text, max_length=512)
+
+    esg_category = normalize_esg_label(esg_result.get("label", ""))
+    esg_confidence = float(esg_result.get("score", np.nan))
+
+    sentiment = normalize_sentiment_label(sentiment_result.get("label", ""))
+    sentiment_confidence = float(sentiment_result.get("score", np.nan))
+
+    risk_level = calculate_risk_level(esg_category, sentiment)
+
+    results_df = pd.DataFrame(
+        [
+            {
+                "chunk_id": 1,
+                "chunk_text": cleaned_text,
+                "chunk_preview": cleaned_text[:220],
+                "word_count": len(cleaned_text.split()),
+                "esg_category": esg_category,
+                "esg_confidence": esg_confidence,
+                "sentiment": sentiment,
+                "sentiment_confidence": sentiment_confidence,
+                "risk_level": risk_level,
+            }
+        ]
+    )
+
+    summary = build_document_summary(results_df, total_words=len(cleaned_text.split()))
+
+    summary["esg_model_name"] = esg_model_name
+    summary["sentiment_model_name"] = sentiment_model_name
+    summary["device"] = device_name
+    summary["local_model_loaded"] = local_model_loaded
+
+    return summary
+
+
 # =========================================================
-# Rendering Helpers
+# Rendering
 # =========================================================
 
 def render_top_brand() -> None:
@@ -1555,35 +1548,6 @@ def render_context_cards() -> None:
             """,
             unsafe_allow_html=True,
         )
-
-
-def render_advanced_settings() -> Tuple[int, int, int]:
-    with st.expander("Advanced analysis settings", expanded=False):
-        max_words = st.slider(
-            "Words per internal segment",
-            min_value=120,
-            max_value=220,
-            value=180,
-            step=10,
-        )
-
-        overlap_words = st.slider(
-            "Overlap words between internal segments",
-            min_value=0,
-            max_value=50,
-            value=30,
-            step=5,
-        )
-
-        max_chunks = st.slider(
-            "Maximum internal segments to analyze",
-            min_value=10,
-            max_value=120,
-            value=80,
-            step=10,
-        )
-
-    return max_words, overlap_words, max_chunks
 
 
 def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], labels: List[str]) -> None:
@@ -1795,6 +1759,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
     )
 
     download_summary = summary.copy()
+
     for key in [
         "esg_category_distribution",
         "sentiment_distribution",
@@ -1826,7 +1791,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
 
 
 # =========================================================
-# Main Layout
+# Main App Layout
 # =========================================================
 
 render_top_brand()
@@ -1854,6 +1819,10 @@ input_mode = st.radio(
 )
 
 st.markdown('<div class="module-card">', unsafe_allow_html=True)
+
+MAX_WORDS = 180
+OVERLAP_WORDS = 30
+MAX_CHUNKS = 80
 
 if input_mode == "Paste Text":
     st.markdown(
@@ -1891,7 +1860,6 @@ if input_mode == "Paste Text":
         unsafe_allow_html=True,
     )
 
-    max_words, overlap_words, max_chunks = render_advanced_settings()
     analyze_text_clicked = st.button("Generate ESG Analyst Briefing", type="primary")
 
     if analyze_text_clicked:
@@ -1906,16 +1874,16 @@ if input_mode == "Paste Text":
                 if word_count > 10000:
                     st.info(
                         f"Large text detected: approximately {word_count:,} words. "
-                        f"The app will analyze up to {max_chunks} internal segments "
+                        f"The app will analyze up to {MAX_CHUNKS} internal segments "
                         f"and show only the ESG analyst briefing."
                     )
 
                 with st.spinner("Analyzing long text and generating ESG analyst briefing..."):
                     _, summary = analyze_long_document(
                         cleaned_input,
-                        max_words=max_words,
-                        overlap_words=overlap_words,
-                        max_chunks=max_chunks,
+                        max_words=MAX_WORDS,
+                        overlap_words=OVERLAP_WORDS,
+                        max_chunks=MAX_CHUNKS,
                     )
 
                 render_esg_analyst_briefing(summary)
@@ -1949,7 +1917,6 @@ elif input_mode == "Upload PDF / Word":
         help="Supported formats: PDF, DOCX, TXT",
     )
 
-    max_words, overlap_words, max_chunks = render_advanced_settings()
     analyze_doc_clicked = st.button("Generate ESG Analyst Briefing", type="primary")
 
     if analyze_doc_clicked:
@@ -1969,16 +1936,16 @@ elif input_mode == "Upload PDF / Word":
                     if total_words > 10000:
                         st.info(
                             f"Large document detected: approximately {total_words:,} words. "
-                            f"The app will analyze up to {max_chunks} internal segments "
+                            f"The app will analyze up to {MAX_CHUNKS} internal segments "
                             f"and show only the ESG analyst briefing."
                         )
 
                     with st.spinner("Analyzing document and generating ESG analyst briefing..."):
                         _, summary = analyze_long_document(
                             extracted_text,
-                            max_words=max_words,
-                            overlap_words=overlap_words,
-                            max_chunks=max_chunks,
+                            max_words=MAX_WORDS,
+                            overlap_words=OVERLAP_WORDS,
+                            max_chunks=MAX_CHUNKS,
                         )
 
                     render_esg_analyst_briefing(summary)
