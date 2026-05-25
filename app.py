@@ -30,7 +30,7 @@ except ImportError:
 
 
 # =========================================================
-# Page Configuration
+# Configuration
 # =========================================================
 
 PROJECT_NAME = "AI-powered ESG Analyst Briefing System for BlackRock"
@@ -42,7 +42,7 @@ DEFAULT_MAX_CHUNKS = 80
 
 st.set_page_config(
     page_title=APP_NAME,
-    page_icon="◌",
+    page_icon="🌱",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -144,6 +144,7 @@ st.markdown(
         background: #ffffff !important;
         color: var(--ink) !important;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        padding: 1rem !important;
     }
 
     textarea:focus {
@@ -162,32 +163,34 @@ st.markdown(
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.9rem;
     }
 
     .brand-lockup {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: 0.85rem;
     }
 
-    .brand-mark {
-        width: 2.55rem;
-        height: 2.55rem;
+    .brand-badge {
+        width: 3.1rem;
+        height: 3.1rem;
         border-radius: 999px;
-        background: var(--sage-soft);
+        background: linear-gradient(135deg, #e9eee4 0%, #f8f6f1 100%);
+        border: 1px solid var(--line-strong);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--sage-dark);
-        font-size: 1.25rem;
-        border: 1px solid rgba(215,210,198,0.8);
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
     }
 
     .brand-text-main {
         color: var(--ink);
-        font-size: 1.05rem;
-        font-weight: 760;
+        font-size: 1.06rem;
+        font-weight: 770;
         line-height: 1.05;
     }
 
@@ -200,10 +203,10 @@ st.markdown(
     .prototype-pill {
         display: inline-flex;
         align-items: center;
-        background: rgba(255,255,255,0.58);
+        background: rgba(255,255,255,0.64);
         border: 1px solid var(--line);
         border-radius: 999px;
-        padding: 0.55rem 0.85rem;
+        padding: 0.58rem 0.9rem;
         font-size: 0.86rem;
         color: var(--ink-soft);
         font-weight: 620;
@@ -214,8 +217,8 @@ st.markdown(
         background: linear-gradient(135deg, #efebe2 0%, #f8f6f1 52%, #e9eee4 100%);
         border: 1px solid rgba(215, 210, 198, 0.9);
         border-radius: 30px;
-        padding: 2.1rem;
-        margin-bottom: 1rem;
+        padding: 2.25rem;
+        margin-bottom: 1.1rem;
         box-shadow: var(--shadow);
         overflow: hidden;
     }
@@ -239,25 +242,25 @@ st.markdown(
     .eyebrow {
         display: inline-flex;
         align-items: center;
-        padding: 0.35rem 0.75rem;
+        padding: 0.38rem 0.78rem;
         border: 1px solid rgba(47,48,45,0.10);
         border-radius: 999px;
-        background: rgba(255,255,255,0.52);
+        background: rgba(255,255,255,0.54);
         color: var(--ink-soft);
         font-size: 0.8rem;
-        font-weight: 680;
-        letter-spacing: 0.03em;
+        font-weight: 700;
+        letter-spacing: 0.035em;
         text-transform: uppercase;
-        margin-bottom: 0.95rem;
+        margin-bottom: 1rem;
     }
 
     .hero-title {
         font-size: clamp(2.25rem, 4.8vw, 4.4rem);
         line-height: 0.96;
-        font-weight: 780;
+        font-weight: 800;
         letter-spacing: -0.07em;
         color: var(--ink);
-        margin-bottom: 0.9rem;
+        margin-bottom: 0.95rem;
     }
 
     .hero-subtitle {
@@ -265,7 +268,7 @@ st.markdown(
         line-height: 1.55;
         color: var(--sage-dark);
         max-width: 780px;
-        font-weight: 550;
+        font-weight: 570;
         margin-bottom: 0.9rem;
     }
 
@@ -279,18 +282,19 @@ st.markdown(
     .workflow-card {
         position: relative;
         z-index: 1;
-        background: rgba(255,255,255,0.76);
+        background: rgba(255,255,255,0.78);
         border: 1px solid rgba(215,210,198,0.95);
         border-radius: 24px;
-        padding: 1.25rem;
+        padding: 1.35rem;
         box-shadow: var(--shadow-soft);
         backdrop-filter: blur(10px);
+        min-height: 238px;
     }
 
     .workflow-title {
         color: var(--ink);
-        font-size: 1rem;
-        font-weight: 740;
+        font-size: 1.02rem;
+        font-weight: 760;
         margin-bottom: 0.9rem;
     }
 
@@ -298,7 +302,7 @@ st.markdown(
         display: flex;
         gap: 0.72rem;
         align-items: flex-start;
-        padding: 0.65rem 0;
+        padding: 0.66rem 0;
         border-bottom: 1px solid rgba(215,210,198,0.55);
         color: var(--ink-soft);
         font-size: 0.92rem;
@@ -323,13 +327,13 @@ st.markdown(
     }
 
     .context-card {
-        height: 168px;
-        min-height: 168px;
-        max-height: 168px;
-        background: rgba(255,255,255,0.78);
+        height: 190px;
+        min-height: 190px;
+        max-height: 190px;
+        background: rgba(255,255,255,0.82);
         border: 1px solid var(--line);
         border-radius: 24px;
-        padding: 1.1rem;
+        padding: 1.35rem;
         box-shadow: var(--shadow-soft);
         display: flex;
         gap: 1rem;
@@ -337,49 +341,55 @@ st.markdown(
         overflow: hidden;
     }
 
+    .context-card-content {
+        padding-right: 0.2rem;
+    }
+
     .context-icon {
-        width: 3.2rem;
-        height: 3.2rem;
+        width: 3.25rem;
+        height: 3.25rem;
         border-radius: 999px;
         background: #f1efeb;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--sage-dark);
-        font-size: 1.2rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
         flex: 0 0 auto;
-        border: 1px solid rgba(215,210,198,0.7);
+        border: 1px solid rgba(215,210,198,0.85);
     }
 
     .context-title {
         font-size: 1rem;
-        font-weight: 740;
+        font-weight: 760;
         color: var(--ink);
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.5rem;
     }
 
     .context-text {
         font-size: 0.86rem;
-        line-height: 1.45;
+        line-height: 1.5;
         color: var(--ink-soft);
     }
 
     .input-studio {
-        background: rgba(255, 255, 255, 0.84);
+        background: rgba(255, 255, 255, 0.86);
         border: 1px solid var(--line);
         border-radius: 30px;
-        padding: 1.35rem;
+        padding: 1.45rem;
         box-shadow: 0 18px 45px rgba(47, 48, 45, 0.07);
-        margin-top: 1rem;
+        margin-top: 1.1rem;
         margin-bottom: 1.2rem;
     }
 
     .input-studio-title {
         font-size: 1.45rem;
-        font-weight: 760;
+        font-weight: 780;
         letter-spacing: -0.04em;
         color: var(--ink);
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.35rem;
     }
 
     .input-studio-subtitle {
@@ -395,8 +405,8 @@ st.markdown(
         letter-spacing: 0.08em;
         color: var(--muted);
         font-weight: 760;
-        margin-top: 1.05rem;
-        margin-bottom: 0.45rem;
+        margin-top: 1.15rem;
+        margin-bottom: 0.5rem;
     }
 
     div[role="radiogroup"] {
@@ -427,32 +437,34 @@ st.markdown(
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 26px;
-        padding: 1.25rem;
+        padding: 1.35rem;
     }
 
     .module-title-row {
         display: flex;
         align-items: center;
         gap: 0.72rem;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.35rem;
     }
 
-    .module-icon {
-        width: 2.25rem;
-        height: 2.25rem;
+    .module-badge {
+        width: 2.3rem;
+        height: 2.3rem;
         border-radius: 999px;
         background: var(--sage-soft);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--sage-dark);
-        font-size: 1rem;
+        font-size: 0.78rem;
+        font-weight: 800;
         flex: 0 0 auto;
+        border: 1px solid var(--line);
     }
 
     .module-title {
         font-size: 1.15rem;
-        font-weight: 740;
+        font-weight: 760;
         letter-spacing: -0.03em;
         color: var(--ink);
     }
@@ -468,26 +480,26 @@ st.markdown(
         font-size: 0.85rem;
         color: #7a7d75;
         line-height: 1.45;
-        margin-top: 0.65rem;
+        margin-top: 0.75rem;
         margin-bottom: 1rem;
         background: #f1efeb;
         border: 1px solid var(--line);
         border-radius: 16px;
-        padding: 0.75rem 0.85rem;
+        padding: 0.85rem 0.95rem;
     }
 
     .result-shell {
         background: rgba(255,255,255,0.92);
         border: 1px solid var(--line);
         border-radius: 30px;
-        padding: 1.35rem;
+        padding: 1.45rem;
         box-shadow: var(--shadow);
         margin-top: 1.25rem;
     }
 
     .result-title {
         font-size: 1.65rem;
-        font-weight: 780;
+        font-weight: 800;
         letter-spacing: -0.04em;
         color: var(--ink);
         margin-bottom: 1rem;
@@ -497,15 +509,15 @@ st.markdown(
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 22px;
-        padding: 1.05rem;
+        padding: 1.25rem;
         margin-top: 1rem;
     }
 
     .briefing-title {
         color: var(--ink);
-        font-weight: 760;
-        margin-bottom: 0.55rem;
-        font-size: 1.02rem;
+        font-weight: 780;
+        margin-bottom: 0.7rem;
+        font-size: 1.03rem;
     }
 
     .briefing-text {
@@ -517,39 +529,45 @@ st.markdown(
     .metric-card {
         background: var(--bg-soft);
         border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 1rem;
-        min-height: 125px;
+        border-radius: 22px;
+        padding: 1.25rem;
+        height: 170px;
+        min-height: 170px;
+        max-height: 170px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
     }
 
     .metric-label {
         color: var(--muted);
         font-size: 0.78rem;
-        font-weight: 720;
+        font-weight: 780;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        margin-bottom: 0.55rem;
+        line-height: 1.35;
     }
 
     .metric-value {
         color: var(--ink);
         font-size: 1.28rem;
-        font-weight: 760;
+        font-weight: 800;
         letter-spacing: -0.04em;
-        margin-bottom: 0.35rem;
         word-break: break-word;
+        line-height: 1.12;
     }
 
     .metric-caption {
         color: var(--ink-soft);
         font-size: 0.86rem;
-        line-height: 1.4;
+        line-height: 1.35;
     }
 
     .risk-card {
         border-radius: 22px;
-        padding: 1.05rem 1.1rem;
-        margin-top: 1.05rem;
+        padding: 1.2rem 1.25rem;
+        margin-top: 1.1rem;
         border: 1px solid var(--line);
     }
 
@@ -563,29 +581,29 @@ st.markdown(
         letter-spacing: 0.08em;
         color: var(--muted);
         font-weight: 780;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.45rem;
     }
 
     .risk-value {
         color: var(--ink);
         font-size: 1.85rem;
-        font-weight: 780;
+        font-weight: 800;
         letter-spacing: -0.05em;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.3rem;
     }
 
     .breakdown-row {
         display: grid;
-        grid-template-columns: 140px 1fr 70px;
+        grid-template-columns: 140px 1fr 76px;
         gap: 0.75rem;
         align-items: center;
-        margin: 0.55rem 0;
+        margin: 0.6rem 0;
     }
 
     .breakdown-label {
         color: var(--ink);
         font-size: 0.9rem;
-        font-weight: 620;
+        font-weight: 640;
     }
 
     .breakdown-track {
@@ -611,49 +629,51 @@ st.markdown(
     .driver-pill {
         display: inline-flex;
         align-items: center;
-        margin: 0.25rem 0.3rem 0.25rem 0;
-        padding: 0.45rem 0.65rem;
+        margin: 0.28rem 0.32rem 0.28rem 0;
+        padding: 0.5rem 0.72rem;
         border-radius: 999px;
         background: var(--sage-soft);
         border: 1px solid rgba(174,184,162,0.45);
         color: var(--ink-soft);
         font-size: 0.84rem;
-        font-weight: 600;
+        font-weight: 640;
     }
 
     .evidence-card {
         background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 18px;
-        padding: 0.9rem;
-        margin: 0.6rem 0;
+        padding: 1rem;
+        margin: 0.7rem 0;
         color: var(--ink-soft);
-        line-height: 1.56;
+        line-height: 1.58;
         font-size: 0.9rem;
     }
 
     .materiality-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 0.75rem;
+        gap: 0.85rem;
     }
 
     .materiality-card {
         background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 18px;
-        padding: 0.85rem;
+        padding: 1rem;
+        min-height: 110px;
     }
 
     .materiality-label {
         color: var(--ink-soft);
         font-size: 0.82rem;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.45rem;
+        line-height: 1.35;
     }
 
     .materiality-value {
         color: var(--ink);
-        font-weight: 760;
+        font-weight: 800;
         font-size: 1.05rem;
     }
 
@@ -661,10 +681,10 @@ st.markdown(
         background: #ffffff;
         border: 1px solid var(--line);
         border-radius: 16px;
-        padding: 0.75rem 0.85rem;
-        margin: 0.45rem 0;
+        padding: 0.85rem 0.95rem;
+        margin: 0.5rem 0;
         color: var(--ink-soft);
-        line-height: 1.48;
+        line-height: 1.5;
         font-size: 0.9rem;
     }
 
@@ -672,7 +692,7 @@ st.markdown(
         background: #f1efeb;
         border: 1px solid var(--line);
         border-radius: 18px;
-        padding: 0.9rem;
+        padding: 1rem;
         margin-top: 1rem;
         color: var(--ink-soft);
         line-height: 1.55;
@@ -690,6 +710,12 @@ st.markdown(
 
     @media (max-width: 900px) {
         .context-card {
+            height: auto;
+            min-height: 160px;
+            max-height: none;
+        }
+
+        .metric-card {
             height: auto;
             min-height: 150px;
             max-height: none;
@@ -741,7 +767,7 @@ LOCAL_ESG_MODEL_DIR = PROJECT_ROOT / "04_models" / "blackrock_esg_classifier"
 
 
 # =========================================================
-# Basic Utilities
+# Utilities
 # =========================================================
 
 def get_device() -> Tuple[int, str]:
@@ -797,14 +823,12 @@ def calculate_segment_risk_level(esg_label: str, sentiment_label: str) -> str:
 
     if esg_label == "Non-ESG":
         return "Low"
-
     if sentiment_label == "Negative":
         return "High"
     if sentiment_label == "Neutral":
         return "Medium"
     if sentiment_label == "Positive":
         return "Low"
-
     return "Medium"
 
 
@@ -872,10 +896,8 @@ def extract_text_from_uploaded_file(uploaded_file) -> str:
 
     if file_name.endswith(".pdf"):
         return extract_text_from_pdf(uploaded_file)
-
     if file_name.endswith(".docx"):
         return extract_text_from_docx(uploaded_file)
-
     if file_name.endswith(".txt"):
         return extract_text_from_txt(uploaded_file)
 
@@ -960,17 +982,21 @@ RISK_KEYWORDS = {
 def get_document_recommended_action(overall_risk_level: str) -> str:
     if overall_risk_level == "High":
         return (
-            "Further analyst review is recommended before using this information in ESG "
-            "investment research. Analysts should examine the original document sections "
-            "related to the dominant ESG topic, negative sentiment, and supporting evidence."
+            "Escalate this document for ESG analyst review. Prioritize source verification, "
+            "management response, remediation evidence, and whether the issue is recurring. "
+            "Use the briefing as a screening input rather than an investment recommendation."
         )
 
     if overall_risk_level == "Medium":
         return (
-            "Monitor the issue and review supporting company disclosures or external evidence."
+            "Place the issue on an ESG watchlist. Review supporting disclosures, compare with "
+            "peer practices, and monitor whether the topic appears in future reports or external news."
         )
 
-    return "No immediate ESG risk escalation is required based on this document."
+    return (
+        "No immediate ESG escalation is required based on this document. Keep the output as a "
+        "screening record and review again if new evidence or negative developments emerge."
+    )
 
 
 def extract_risk_drivers(text: str) -> List[Dict[str, str]]:
@@ -1059,24 +1085,43 @@ def build_materiality_assessment(
 
 def build_analyst_checklist(overall_risk: str, top_esg_category: str) -> List[str]:
     checklist = [
-        "Review the original source sections related to the detected ESG topic.",
-        "Check whether the issue is recurring or a one-off event.",
-        "Compare the company’s disclosure with peer companies.",
-        "Verify whether regulators, auditors, NGOs, or media sources have raised similar concerns.",
-        "Check whether management has provided remediation plans or measurable targets.",
+        "Identify the exact document section or paragraph behind the ESG signal and verify it against the original source.",
+        "Check whether the issue is recurring across prior sustainability reports, annual reports, controversies, or news coverage.",
+        "Compare the company’s disclosure quality and ESG response with close peer companies.",
+        "Verify whether regulators, auditors, NGOs, employees, suppliers, or media have raised similar concerns.",
+        "Assess whether management provides a measurable remediation plan, timeline, accountability owner, and progress indicators.",
+        "Determine whether the issue affects financial materiality, operational continuity, regulatory exposure, or stakeholder trust.",
     ]
 
     if top_esg_category == "Environmental":
-        checklist.append(
-            "Review emissions targets, climate transition plans, and Scope 1, 2, and 3 disclosure quality."
+        checklist.extend(
+            [
+                "Review Scope 1, Scope 2, and Scope 3 emissions disclosure completeness and consistency.",
+                "Check whether climate targets are science-based, time-bound, and supported by capital allocation or transition plans.",
+                "Assess exposure to carbon pricing, environmental regulation, pollution incidents, and climate transition risk.",
+            ]
         )
     elif top_esg_category == "Social":
-        checklist.append(
-            "Review labor practices, safety records, diversity policies, supply chain controls, and privacy incidents."
+        checklist.extend(
+            [
+                "Review workforce safety metrics, employee turnover, discrimination allegations, and labor relations history.",
+                "Assess supply-chain labor standards, human rights controls, customer privacy incidents, and product safety records.",
+                "Check whether the company discloses measurable social performance targets and remediation outcomes.",
+            ]
         )
     elif top_esg_category == "Governance":
-        checklist.append(
-            "Review board oversight, audit controls, compliance policies, executive compensation, and shareholder rights."
+        checklist.extend(
+            [
+                "Review board independence, audit oversight, internal control weaknesses, and compliance incidents.",
+                "Check whether executive compensation is aligned with long-term performance and ESG accountability.",
+                "Assess potential greenwashing, misleading disclosure, bribery, corruption, shareholder-rights, or ethics risks.",
+            ]
+        )
+
+    if overall_risk == "High":
+        checklist.insert(
+            0,
+            "Escalate the case for senior ESG analyst review and preserve the source document for audit trail purposes.",
         )
 
     return checklist
@@ -1087,22 +1132,45 @@ def build_confidence_interpretation(avg_esg_conf: float, avg_sent_conf: float) -
 
     if average_confidence >= 0.85:
         signal = "Strong model signal"
+        action = (
+            "The model output is directionally reliable for screening, but analysts should still verify "
+            "the supporting evidence and original document context."
+        )
     elif average_confidence >= 0.65:
         signal = "Moderate model signal"
+        action = (
+            "The output is useful for triage, but manual review is recommended before using it in a "
+            "research memo or ESG monitoring workflow."
+        )
     else:
         signal = "Low model signal"
+        action = (
+            "Treat this result as uncertain. Analysts should manually inspect the document and avoid "
+            "drawing conclusions from the model output alone."
+        )
 
     return (
-        f"{signal}. This output should be treated as an ESG screening signal rather "
-        f"than a final ESG rating. Analysts should review the original source text, "
-        f"model limitations, and supporting evidence before drawing conclusions."
+        f"{signal}. {action} This briefing is not a final ESG rating and does not provide investment advice."
     )
 
 
-def build_decision_support_note() -> str:
+def build_decision_support_note(overall_risk: str) -> str:
+    if overall_risk == "High":
+        return (
+            "Decision support note: prioritize this document for deeper ESG due diligence. "
+            "Recommended follow-up includes evidence verification, peer comparison, regulatory scan, "
+            "management-response review, and escalation to the ESG research team if the issue is material."
+        )
+
+    if overall_risk == "Medium":
+        return (
+            "Decision support note: use this output as a watchlist signal. Track whether the issue becomes "
+            "more frequent, more severe, or externally validated by regulators, auditors, media, or stakeholders."
+        )
+
     return (
-        "This result can help analysts prioritize ESG documents for deeper review. "
-        "It does not determine investment suitability and does not provide investment advice."
+        "Decision support note: the document does not indicate immediate ESG risk escalation. "
+        "Keep the output as a screening record and reassess if new negative evidence appears."
     )
 
 
@@ -1150,13 +1218,10 @@ def choose_overall_document_risk(
 
     if high_risk_chunks >= 2 or high_share >= 0.15:
         return "High"
-
     if high_risk_chunks == 1:
         return "Medium"
-
     if medium_risk_chunks >= 2 or medium_share >= 0.25:
         return "Medium"
-
     if esg_share >= 0.35 and medium_risk_chunks >= 1:
         return "Medium"
 
@@ -1183,7 +1248,8 @@ def build_executive_summary(summary: Dict[str, Any]) -> str:
         return (
             f"The document shows a Medium ESG risk profile. The dominant ESG topic is {category}, "
             f"and the dominant sentiment is {sentiment}. The content may warrant monitoring and "
-            f"follow-up review, particularly if similar issues appear in external sources or prior disclosures."
+            f"follow-up review, particularly if similar issues appear in external sources, peer disclosures, "
+            f"or prior company reports."
         )
 
     return (
@@ -1193,11 +1259,14 @@ def build_executive_summary(summary: Dict[str, Any]) -> str:
     )
 
 
-def build_scope_note(total_words: int, chunks_analyzed: int, max_chunks: int) -> str:
+def build_scope_note(total_words: int, chunks_analyzed: int) -> str:
     if total_words <= 0:
         return "No readable text was analyzed."
 
-    estimated_possible_chunks = max(1, math.ceil(total_words / max(DEFAULT_MAX_WORDS - DEFAULT_OVERLAP_WORDS, 1)))
+    estimated_possible_chunks = max(
+        1,
+        math.ceil(total_words / max(DEFAULT_MAX_WORDS - DEFAULT_OVERLAP_WORDS, 1)),
+    )
 
     if chunks_analyzed >= estimated_possible_chunks:
         return (
@@ -1214,7 +1283,7 @@ def build_scope_note(total_words: int, chunks_analyzed: int, max_chunks: int) ->
 
 
 # =========================================================
-# Analysis Logic
+# Analysis
 # =========================================================
 
 def split_text_into_chunks(
@@ -1303,8 +1372,8 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             "materiality_assessment": build_materiality_assessment("Non-ESG", "Neutral", "Low"),
             "analyst_checklist": build_analyst_checklist("Low", "Non-ESG"),
             "confidence_interpretation": build_confidence_interpretation(0.0, 0.0),
-            "decision_support_note": build_decision_support_note(),
-            "scope_note": build_scope_note(total_words, 0, DEFAULT_MAX_CHUNKS),
+            "decision_support_note": build_decision_support_note("Low"),
+            "scope_note": build_scope_note(total_words, 0),
         }
         summary["executive_summary"] = build_executive_summary(summary)
         return summary
@@ -1348,7 +1417,7 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             f"This document contains ESG-related content, primarily associated with "
             f"{top_esg_category}. The dominant sentiment is {dominant_sentiment}. "
             f"The overall ESG risk level is Medium, suggesting that analysts should monitor "
-            f"the issue and review supporting company disclosures or external evidence."
+            f"the issue and review supporting company disclosures, peer practices, and external evidence."
         )
     else:
         overall_interpretation = (
@@ -1386,8 +1455,8 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
             average_esg_confidence,
             average_sentiment_confidence,
         ),
-        "decision_support_note": build_decision_support_note(),
-        "scope_note": build_scope_note(total_words, chunks_analyzed, DEFAULT_MAX_CHUNKS),
+        "decision_support_note": build_decision_support_note(overall_risk_level),
+        "scope_note": build_scope_note(total_words, chunks_analyzed),
     }
 
     summary["executive_summary"] = build_executive_summary(summary)
@@ -1492,7 +1561,7 @@ def render_top_brand() -> None:
         """
         <div class="top-brand">
             <div class="brand-lockup">
-                <div class="brand-mark">◒</div>
+                <div class="brand-badge">ESG</div>
                 <div>
                     <div class="brand-text-main">BlackRock</div>
                     <div class="brand-text-sub">ESG Analyst Briefing System</div>
@@ -1534,9 +1603,9 @@ def render_hero() -> None:
             """
             <div class="workflow-card">
                 <div class="workflow-title">ESG Briefing Workflow</div>
-                <div class="workflow-step"><div class="step-index">1</div><div>Input text or upload document</div></div>
-                <div class="workflow-step"><div class="step-index">2</div><div>Classify ESG topic and sentiment</div></div>
-                <div class="workflow-step"><div class="step-index">3</div><div>Assess ESG materiality signals</div></div>
+                <div class="workflow-step"><div class="step-index">1</div><div>Input ESG text or upload a document</div></div>
+                <div class="workflow-step"><div class="step-index">2</div><div>Classify ESG category and sentiment</div></div>
+                <div class="workflow-step"><div class="step-index">3</div><div>Identify risk drivers and evidence</div></div>
                 <div class="workflow-step"><div class="step-index">4</div><div>Generate analyst briefing</div></div>
             </div>
             """,
@@ -1555,8 +1624,8 @@ def render_context_cards() -> None:
         st.markdown(
             """
             <div class="context-card">
-                <div class="context-icon">◎</div>
-                <div>
+                <div class="context-icon">ESG</div>
+                <div class="context-card-content">
                     <div class="context-title">Purpose</div>
                     <div class="context-text">
                         Convert ESG documents into practical analyst briefings for research screening.
@@ -1571,8 +1640,8 @@ def render_context_cards() -> None:
         st.markdown(
             f"""
             <div class="context-card">
-                <div class="context-icon">▱</div>
-                <div>
+                <div class="context-icon">AI</div>
+                <div class="context-card-content">
                     <div class="context-title">Models</div>
                     <div class="context-text">
                         ESG Classifier: DistilBERT fine-tuned or FinBERT-ESG fallback<br>
@@ -1589,8 +1658,8 @@ def render_context_cards() -> None:
         st.markdown(
             """
             <div class="context-card">
-                <div class="context-icon">◇</div>
-                <div>
+                <div class="context-icon">RISK</div>
+                <div class="context-card-content">
                     <div class="context-title">Risk Logic</div>
                     <div class="context-text">
                         ESG + Negative → High<br>
@@ -1608,8 +1677,8 @@ def render_context_cards() -> None:
         st.markdown(
             """
             <div class="context-card">
-                <div class="context-icon">i</div>
-                <div>
+                <div class="context-icon">NOTE</div>
+                <div class="context-card-content">
                     <div class="context-title">Disclaimer</div>
                     <div class="context-text">
                         Educational prototype only. Supports ESG screening and does not provide investment advice.
@@ -1871,7 +1940,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
 
 
 # =========================================================
-# Main App Layout
+# Main App
 # =========================================================
 
 render_top_brand()
@@ -1904,7 +1973,7 @@ if input_mode == "Paste Text":
     st.markdown(
         """
         <div class="module-title-row">
-            <div class="module-icon">✎</div>
+            <div class="module-badge">TXT</div>
             <div><div class="module-title">Paste ESG-related text</div></div>
         </div>
         <div class="module-subtitle">
@@ -1975,7 +2044,7 @@ elif input_mode == "Upload PDF / Word":
     st.markdown(
         """
         <div class="module-title-row">
-            <div class="module-icon">↥</div>
+            <div class="module-badge">DOC</div>
             <div><div class="module-title">Upload an ESG document</div></div>
         </div>
         <div class="module-subtitle">
