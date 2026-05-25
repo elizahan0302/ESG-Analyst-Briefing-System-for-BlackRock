@@ -5,3 +5,5 @@ pandas
 numpy
 accelerate
 safetensors
+pypdf
+python-docx
