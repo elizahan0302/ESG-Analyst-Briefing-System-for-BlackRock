@@ -7,6 +7,7 @@ from __future__ import annotations
 import html
 import math
 import re
+from collections import Counter
 from io import BytesIO
 from typing import Any, Dict, List, Tuple
 
@@ -66,7 +67,7 @@ DEFAULT_MAX_CHUNKS = 80
 
 st.set_page_config(
     page_title=APP_NAME,
-    page_icon="🌱",
+    page_icon="ESG",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -796,6 +797,103 @@ def safe_pipeline_predict(pipe, text: str, max_length: int = 512) -> Dict[str, A
     return pipe(text, truncation=True, max_length=max_length)[0]
 
 
+def sanitize_filename(value: str) -> str:
+    value = value.lower().strip()
+    value = re.sub(r"\.[a-zA-Z0-9]+$", "", value)
+    value = re.sub(r"[^a-z0-9]+", "_", value)
+    value = re.sub(r"_+", "_", value)
+    value = value.strip("_")
+    return value
+
+
+def generate_report_filename(
+    text: str,
+    uploaded_file_name: str | None = None,
+    summary: Dict[str, Any] | None = None,
+) -> str:
+    """
+    Generate a stable and meaningful PDF filename from document content.
+    This avoids repeated generic names such as esg_analyst_briefing_report (1).pdf.
+    """
+
+    stopwords = {
+        "the", "and", "for", "with", "that", "this", "from", "into", "their", "there",
+        "about", "were", "was", "are", "has", "have", "had", "will", "would", "could",
+        "should", "can", "may", "not", "but", "its", "our", "they", "them", "his",
+        "her", "you", "your", "company", "companies", "business", "report", "annual",
+        "sustainability", "financial", "statement", "statements", "management", "group",
+        "limited", "inc", "corp", "corporation", "plc", "ltd", "llc", "esg", "risk",
+        "risks", "analysis", "analyst", "briefing", "document", "material", "materials",
+        "information", "data", "year", "years", "including", "related", "also",
+    }
+
+    esg_priority_terms = [
+        "climate", "emissions", "carbon", "scope", "renewable", "netzero", "net",
+        "biodiversity", "pollution", "waste", "water", "deforestation",
+        "labor", "worker", "safety", "diversity", "privacy", "human", "rights",
+        "supply", "chain", "community", "product",
+        "governance", "board", "audit", "compliance", "bribery", "corruption",
+        "greenwashing", "shareholder", "oversight", "controls", "regulatory",
+    ]
+
+    cleaned_text = clean_input_text(text).lower()
+    tokens = re.findall(r"[a-zA-Z][a-zA-Z0-9]{2,}", cleaned_text)
+
+    filtered_tokens = [
+        token for token in tokens
+        if token not in stopwords and len(token) >= 3 and not token.isdigit()
+    ]
+
+    counter = Counter(filtered_tokens)
+
+    selected_keywords = []
+
+    for term in esg_priority_terms:
+        if term in counter and term not in selected_keywords:
+            selected_keywords.append(term)
+
+    for token, _ in counter.most_common(20):
+        if token not in selected_keywords:
+            selected_keywords.append(token)
+        if len(selected_keywords) >= 5:
+            break
+
+    if summary:
+        top_category = sanitize_filename(str(summary.get("top_esg_category", "")))
+        sentiment = sanitize_filename(str(summary.get("dominant_sentiment", "")))
+        overall_risk = sanitize_filename(str(summary.get("overall_risk_level", "")))
+
+        for item in [top_category, sentiment, overall_risk]:
+            if item and item not in selected_keywords and item not in {"n_a", "non_esg"}:
+                selected_keywords.append(item)
+
+    selected_keywords = selected_keywords[:6]
+
+    base_parts = []
+
+    if uploaded_file_name:
+        uploaded_base = sanitize_filename(uploaded_file_name)
+        uploaded_base_words = [word for word in uploaded_base.split("_") if word and word not in stopwords]
+        uploaded_base_short = "_".join(uploaded_base_words[:4])
+
+        if uploaded_base_short:
+            base_parts.append(uploaded_base_short)
+
+    if selected_keywords:
+        base_parts.append("_".join(selected_keywords[:5]))
+
+    if not base_parts:
+        base_parts.append("esg_document")
+
+    base_name = "_".join(base_parts)
+    base_name = sanitize_filename(base_name)
+
+    if len(base_name) > 85:
+        base_name = base_name[:85].rstrip("_")
+
+    return f"esg_report_{base_name}.pdf"
+
+
 # =========================================================
 # Document Extraction
 # =========================================================
@@ -1357,6 +1455,7 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
     }
 
     summary["executive_summary"] = build_executive_summary(summary)
+
     return summary
 
 
@@ -1365,6 +1464,7 @@ def analyze_long_document(
     max_words: int = DEFAULT_MAX_WORDS,
     overlap_words: int = DEFAULT_OVERLAP_WORDS,
     max_chunks: int = DEFAULT_MAX_CHUNKS,
+    uploaded_file_name: str | None = None,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     cleaned_text = clean_input_text(text)
     total_words = len(cleaned_text.split())
@@ -1390,6 +1490,11 @@ def analyze_long_document(
 
     results_df = pd.DataFrame(rows)
     summary = build_document_summary(results_df, total_words=total_words)
+    summary["report_filename"] = generate_report_filename(
+        text=cleaned_text,
+        uploaded_file_name=uploaded_file_name,
+        summary=summary,
+    )
 
     return results_df, summary
 
@@ -1898,6 +2003,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
 
     try:
         pdf_bytes = create_pdf_report(summary)
+        report_filename = summary.get("report_filename", "esg_report_document.pdf")
 
         st.markdown(
             """
@@ -1911,7 +2017,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
         st.download_button(
             label="Download ESG Analyst Briefing PDF",
             data=pdf_bytes,
-            file_name="esg_analyst_briefing_report.pdf",
+            file_name=report_filename,
             mime="application/pdf",
         )
 
@@ -2013,6 +2119,7 @@ if input_mode == "Paste Text":
                     max_words=DEFAULT_MAX_WORDS,
                     overlap_words=DEFAULT_OVERLAP_WORDS,
                     max_chunks=DEFAULT_MAX_CHUNKS,
+                    uploaded_file_name=None,
                 )
 
             render_esg_analyst_briefing(summary)
@@ -2074,6 +2181,7 @@ elif input_mode == "Upload PDF / Word":
                             max_words=DEFAULT_MAX_WORDS,
                             overlap_words=DEFAULT_OVERLAP_WORDS,
                             max_chunks=DEFAULT_MAX_CHUNKS,
+                            uploaded_file_name=uploaded_file.name,
                         )
 
                     render_esg_analyst_briefing(summary)
