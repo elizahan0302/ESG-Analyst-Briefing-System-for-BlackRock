@@ -8,3 +8,4 @@ safetensors
 pypdf
 python-docx
 reportlab
+huggingface_hub
