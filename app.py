@@ -2228,8 +2228,7 @@ elif input_mode == "Upload PDF / Word":
 st.markdown(
     """
     <div class="footer-note">
-        Educational prototype for ISOM5240. This application supports ESG risk screening only
-        and does not provide investment advice.
+        This report is for informational purposes only, the information and opinions contained herein do not constitute investment advice to any person.
     </div>
     """,
     unsafe_allow_html=True,
