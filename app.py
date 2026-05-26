@@ -8,7 +8,7 @@ import html
 import json
 import math
 import re
-from io import StringIO
+from io import BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -27,6 +27,24 @@ try:
     from docx import Document
 except ImportError:
     Document = None
+
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_LEFT
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import (
+        SimpleDocTemplate,
+        Paragraph,
+        Spacer,
+        Table,
+        TableStyle,
+        PageBreak,
+    )
+except ImportError:
+    colors = None
+    SimpleDocTemplate = None
 
 
 # =========================================================
@@ -103,7 +121,6 @@ st.markdown(
         display: none;
     }
 
-    /* Button readability fix */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(135deg, #536a5f 0%, #6f8178 100%) !important;
@@ -135,12 +152,20 @@ st.markdown(
 
     div.stDownloadButton > button {
         width: 100%;
-        background: #f8f6f1 !important;
-        color: var(--ink) !important;
-        border: 1px solid var(--line-strong) !important;
+        background: linear-gradient(135deg, #2f302d 0%, #536a5f 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(47, 48, 45, 0.95) !important;
         border-radius: 16px !important;
-        padding: 0.82rem 1.1rem !important;
-        font-weight: 650 !important;
+        padding: 0.9rem 1.1rem !important;
+        font-weight: 760 !important;
+        box-shadow: 0 10px 24px rgba(47, 48, 45, 0.14) !important;
+    }
+
+    div.stDownloadButton > button p,
+    div.stDownloadButton > button span,
+    div.stDownloadButton > button div {
+        color: #ffffff !important;
+        font-weight: 760 !important;
     }
 
     textarea {
@@ -165,7 +190,6 @@ st.markdown(
         padding: 1.2rem;
     }
 
-    /* Top brand: removed prototype pill */
     .top-brand {
         display: flex;
         align-items: center;
@@ -322,59 +346,6 @@ st.markdown(
         flex: 0 0 auto;
     }
 
-    /* Context cards: adaptive width and height, full text visible */
-    .context-card {
-        min-height: 245px;
-        height: auto;
-        background: rgba(255,255,255,0.84);
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        padding: 1.45rem;
-        box-shadow: var(--shadow-soft);
-        display: grid;
-        grid-template-columns: 3.4rem minmax(0, 1fr);
-        gap: 1.15rem;
-        align-items: start;
-        overflow: visible;
-        margin-bottom: 0.2rem;
-    }
-
-    .context-card-content {
-        min-width: 0;
-        padding-right: 0.25rem;
-        overflow-wrap: break-word;
-    }
-
-    .context-icon {
-        width: 3.4rem;
-        height: 3.4rem;
-        border-radius: 999px;
-        background: #f1efeb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--sage-dark);
-        font-size: 0.76rem;
-        font-weight: 850;
-        letter-spacing: 0.02em;
-        border: 1px solid rgba(215,210,198,0.85);
-    }
-
-    .context-title {
-        font-size: 1.04rem;
-        font-weight: 830;
-        color: var(--ink);
-        margin-bottom: 0.58rem;
-        line-height: 1.2;
-    }
-
-    .context-text {
-        font-size: 0.88rem;
-        line-height: 1.52;
-        color: var(--ink-soft);
-        overflow-wrap: break-word;
-    }
-
     .input-panel {
         background: rgba(255, 255, 255, 0.86);
         border: 1px solid var(--line);
@@ -527,7 +498,13 @@ st.markdown(
         font-size: 0.94rem;
     }
 
-    /* Metric cards: stronger contrast and parallel layout */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
     .metric-card {
         background: var(--bg-soft);
         border: 1px solid var(--line);
@@ -535,7 +512,6 @@ st.markdown(
         padding: 1.25rem;
         height: 184px;
         min-height: 184px;
-        max-height: 184px;
         display: grid;
         grid-template-rows: 46px 1fr 36px;
         align-items: center;
@@ -554,11 +530,13 @@ st.markdown(
 
     .metric-value {
         color: #1e2420;
-        font-size: 1.6rem;
+        font-size: clamp(1.35rem, 1.85vw, 1.62rem);
         font-weight: 900;
         letter-spacing: -0.045em;
         line-height: 1.08;
-        word-break: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         align-self: center;
     }
 
@@ -658,7 +636,7 @@ st.markdown(
 
     .materiality-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
         gap: 0.85rem;
     }
 
@@ -705,6 +683,18 @@ st.markdown(
         font-size: 0.9rem;
     }
 
+    .pdf-note {
+        background: #e9eee4;
+        border: 1px solid rgba(83, 106, 95, 0.18);
+        border-radius: 18px;
+        padding: 1rem;
+        margin-top: 1rem;
+        color: var(--sage-dark);
+        line-height: 1.55;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
     .footer-note {
         color: var(--muted);
         font-size: 0.88rem;
@@ -714,34 +704,22 @@ st.markdown(
         border-top: 1px solid var(--line);
     }
 
-    @media (max-width: 1100px) {
-        .context-card {
-            min-height: 260px;
-            grid-template-columns: 1fr;
-        }
-
-        .context-icon {
-            margin-bottom: 0.2rem;
-        }
-    }
-
     @media (max-width: 900px) {
-        .metric-card {
-            height: auto;
-            min-height: 160px;
-            max-height: none;
-        }
-
         div[role="radiogroup"] {
             width: 100%;
         }
 
-        .materiality-grid {
+        .breakdown-row {
             grid-template-columns: 1fr;
         }
 
-        .breakdown-row {
-            grid-template-columns: 1fr;
+        .metric-card {
+            height: auto;
+            min-height: 160px;
+        }
+
+        .metric-value {
+            white-space: normal;
         }
     }
     </style>
@@ -859,11 +837,7 @@ def risk_css_class(risk_level: str) -> str:
 
 
 def safe_pipeline_predict(pipe, text: str, max_length: int = 512) -> Dict[str, Any]:
-    return pipe(
-        text,
-        truncation=True,
-        max_length=max_length,
-    )[0]
+    return pipe(text, truncation=True, max_length=max_length)[0]
 
 
 # =========================================================
@@ -1564,6 +1538,274 @@ def analyze_text(input_text: str) -> Dict[str, Any]:
 
 
 # =========================================================
+# PDF Report Generation
+# =========================================================
+
+def safe_json_for_pdf(value: Any) -> str:
+    try:
+        if isinstance(value, (dict, list)):
+            return json.dumps(value, ensure_ascii=False, indent=2)
+        return str(value)
+    except Exception:
+        return str(value)
+
+
+def create_pdf_report(summary: Dict[str, Any]) -> bytes:
+    if SimpleDocTemplate is None:
+        raise ImportError("reportlab is not installed. Please add reportlab to requirements.txt.")
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=0.65 * inch,
+        leftMargin=0.65 * inch,
+        topMargin=0.65 * inch,
+        bottomMargin=0.65 * inch,
+        title="ESG Analyst Briefing Report",
+    )
+
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        "ReportTitle",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=20,
+        leading=24,
+        textColor=colors.HexColor("#232522"),
+        spaceAfter=12,
+        alignment=TA_LEFT,
+    )
+
+    subtitle_style = ParagraphStyle(
+        "ReportSubtitle",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=9,
+        leading=13,
+        textColor=colors.HexColor("#5f625b"),
+        spaceAfter=14,
+    )
+
+    h2_style = ParagraphStyle(
+        "SectionHeader",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        leading=15,
+        textColor=colors.HexColor("#536a5f"),
+        spaceBefore=12,
+        spaceAfter=8,
+    )
+
+    body_style = ParagraphStyle(
+        "Body",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=9,
+        leading=13,
+        textColor=colors.HexColor("#2f302d"),
+        spaceAfter=7,
+    )
+
+    small_style = ParagraphStyle(
+        "Small",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#5f625b"),
+        spaceAfter=5,
+    )
+
+    story = []
+
+    story.append(Paragraph("ESG Analyst Briefing Report", title_style))
+    story.append(
+        Paragraph(
+            "AI-powered ESG screening output for research triage. "
+            "This report is an educational prototype and does not provide investment advice.",
+            subtitle_style,
+        )
+    )
+
+    story.append(Paragraph("1. Executive ESG Summary", h2_style))
+    story.append(Paragraph(esc(summary.get("executive_summary", "")), body_style))
+
+    story.append(Paragraph("2. Key Metrics", h2_style))
+
+    metric_data = [
+        ["Metric", "Value"],
+        ["Overall ESG Risk", str(summary.get("overall_risk_level", "N/A"))],
+        ["Top ESG Category", str(summary.get("top_esg_category", "N/A"))],
+        ["Dominant Sentiment", str(summary.get("dominant_sentiment", "N/A"))],
+        ["Estimated Words", f"{summary.get('total_words', 0):,}"],
+        ["Internal Segments Analyzed", str(summary.get("chunks_analyzed", "N/A"))],
+        ["ESG Confidence", format_pct(summary.get("average_esg_confidence", 0))],
+        ["Sentiment Confidence", format_pct(summary.get("average_sentiment_confidence", 0))],
+    ]
+
+    metric_table = Table(metric_data, colWidths=[2.3 * inch, 4.4 * inch])
+    metric_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eee4")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#232522")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ("LEADING", (0, 0), (-1, -1), 11),
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7d2c6")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(metric_table)
+
+    story.append(Paragraph("3. Risk Interpretation", h2_style))
+    story.append(Paragraph(esc(summary.get("overall_interpretation", "")), body_style))
+    story.append(Paragraph(esc(summary.get("recommended_action", "")), body_style))
+
+    story.append(Paragraph("4. ESG Category Breakdown", h2_style))
+    esg_distribution = summary.get("esg_category_distribution", {})
+    esg_rows = [["Category", "Share", "Count"]]
+    for label in ["Environmental", "Social", "Governance", "Non-ESG"]:
+        item = esg_distribution.get(label, {"share": 0, "count": 0})
+        esg_rows.append([label, f"{float(item.get('share', 0)) * 100:.1f}%", str(item.get("count", 0))])
+
+    esg_table = Table(esg_rows, colWidths=[2.6 * inch, 2 * inch, 2 * inch])
+    esg_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eee4")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7d2c6")),
+                ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(esg_table)
+
+    story.append(Paragraph("5. Sentiment Breakdown", h2_style))
+    sent_distribution = summary.get("sentiment_distribution", {})
+    sent_rows = [["Sentiment", "Share", "Count"]]
+    for label in ["Negative", "Neutral", "Positive"]:
+        item = sent_distribution.get(label, {"share": 0, "count": 0})
+        sent_rows.append([label, f"{float(item.get('share', 0)) * 100:.1f}%", str(item.get("count", 0))])
+
+    sent_table = Table(sent_rows, colWidths=[2.6 * inch, 2 * inch, 2 * inch])
+    sent_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eee4")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7d2c6")),
+                ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(sent_table)
+
+    story.append(Paragraph("6. Key Risk Drivers", h2_style))
+    drivers = summary.get("risk_driver_keywords", [])
+    if drivers:
+        for driver in drivers:
+            story.append(
+                Paragraph(
+                    f"• {esc(driver.get('category', 'N/A'))}: {esc(driver.get('keyword', 'N/A'))}",
+                    body_style,
+                )
+            )
+    else:
+        story.append(Paragraph("No major rule-based ESG risk keywords were detected.", body_style))
+
+    story.append(Paragraph("7. Evidence Highlights", h2_style))
+    evidence = summary.get("evidence_highlights", [])
+    if evidence:
+        for idx, snippet in enumerate(evidence, start=1):
+            story.append(Paragraph(f"{idx}. {esc(snippet)}", small_style))
+    else:
+        story.append(Paragraph("No strong evidence snippets were selected.", body_style))
+
+    story.append(PageBreak())
+
+    story.append(Paragraph("8. Materiality Assessment", h2_style))
+    materiality = summary.get("materiality_assessment", {})
+    materiality_rows = [["Dimension", "Assessment"]]
+    for key in [
+        "Regulatory Exposure",
+        "Reputation Risk",
+        "Operational Risk",
+        "Disclosure Quality Concern",
+    ]:
+        materiality_rows.append([key, str(materiality.get(key, "Low"))])
+
+    materiality_table = Table(materiality_rows, colWidths=[3.2 * inch, 3.4 * inch])
+    materiality_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eee4")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7d2c6")),
+                ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(materiality_table)
+
+    story.append(Paragraph("9. Analyst Review Checklist", h2_style))
+    checklist = summary.get("analyst_checklist", [])
+    if checklist:
+        for item in checklist:
+            story.append(Paragraph(f"□ {esc(item)}", small_style))
+    else:
+        story.append(Paragraph("No checklist items were generated.", body_style))
+
+    story.append(Paragraph("10. Confidence and Limitations", h2_style))
+    story.append(Paragraph(esc(summary.get("confidence_interpretation", "")), body_style))
+
+    story.append(Paragraph("11. Analysis Scope", h2_style))
+    story.append(Paragraph(esc(summary.get("scope_note", "")), body_style))
+
+    story.append(Paragraph("12. Decision Support Note", h2_style))
+    story.append(Paragraph(esc(summary.get("decision_support_note", "")), body_style))
+
+    story.append(Spacer(1, 12))
+    story.append(
+        Paragraph(
+            "Disclaimer: This report is generated by an educational ESG screening prototype. "
+            "It is not a final ESG rating and does not provide investment advice.",
+            small_style,
+        )
+    )
+
+    doc.build(story)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
+# =========================================================
 # Rendering
 # =========================================================
 
@@ -1625,81 +1867,6 @@ def render_hero() -> None:
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-def render_context_cards() -> None:
-    _, device_name = get_device()
-
-    c1, c2, c3, c4 = st.columns(4, gap="medium")
-
-    with c1:
-        st.markdown(
-            """
-            <div class="context-card">
-                <div class="context-icon">ESG</div>
-                <div class="context-card-content">
-                    <div class="context-title">Purpose</div>
-                    <div class="context-text">
-                        Convert ESG documents into practical analyst briefings for research screening.
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c2:
-        st.markdown(
-            f"""
-            <div class="context-card">
-                <div class="context-icon">AI</div>
-                <div class="context-card-content">
-                    <div class="context-title">Models</div>
-                    <div class="context-text">
-                        ESG Classifier: DistilBERT fine-tuned or FinBERT-ESG fallback<br>
-                        Sentiment: ProsusAI/finbert<br>
-                        Device: {esc(device_name)}
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c3:
-        st.markdown(
-            """
-            <div class="context-card">
-                <div class="context-icon">RISK</div>
-                <div class="context-card-content">
-                    <div class="context-title">Risk Logic</div>
-                    <div class="context-text">
-                        ESG + Negative → High<br>
-                        ESG + Neutral → Medium<br>
-                        ESG + Positive → Low<br>
-                        Non-ESG → Low
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c4:
-        st.markdown(
-            """
-            <div class="context-card">
-                <div class="context-icon">NOTE</div>
-                <div class="context-card-content">
-                    <div class="context-title">Disclaimer</div>
-                    <div class="context-text">
-                        Educational prototype only. Supports ESG screening and does not provide investment advice.
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
 def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], labels: List[str]) -> None:
     st.markdown(
         f"""
@@ -1732,8 +1899,6 @@ def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], l
 
 
 def render_metric_cards(summary: Dict[str, Any]) -> None:
-    c1, c2, c3, c4, c5, c6 = st.columns(6, gap="small")
-
     metrics = [
         ("Overall ESG Risk", summary.get("overall_risk_level", "N/A"), "Risk profile"),
         ("Top ESG Category", summary.get("top_esg_category", "N/A"), "Dominant topic"),
@@ -1743,18 +1908,20 @@ def render_metric_cards(summary: Dict[str, Any]) -> None:
         ("Sentiment Confidence", format_pct(summary.get("average_sentiment_confidence", 0)), "Avg. sentiment signal"),
     ]
 
-    for col, (label, value, caption) in zip([c1, c2, c3, c4, c5, c6], metrics):
-        with col:
-            st.markdown(
-                f"""
-                <div class="metric-card">
-                    <div class="metric-label">{esc(label)}</div>
-                    <div class="metric-value">{esc(value)}</div>
-                    <div class="metric-caption">{esc(caption)}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    metric_html = '<div class="metrics-grid">'
+
+    for label, value, caption in metrics:
+        metric_html += f"""
+        <div class="metric-card">
+            <div class="metric-label">{esc(label)}</div>
+            <div class="metric-value" title="{esc(value)}">{esc(value)}</div>
+            <div class="metric-caption">{esc(caption)}</div>
+        </div>
+        """
+
+    metric_html += "</div>"
+
+    st.markdown(metric_html, unsafe_allow_html=True)
 
 
 def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
@@ -1917,28 +2084,29 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
         unsafe_allow_html=True,
     )
 
-    download_summary = summary.copy()
+    try:
+        pdf_bytes = create_pdf_report(summary)
 
-    for key in [
-        "esg_category_distribution",
-        "sentiment_distribution",
-        "risk_driver_keywords",
-        "evidence_highlights",
-        "materiality_assessment",
-        "analyst_checklist",
-    ]:
-        download_summary[key] = json.dumps(download_summary.get(key, ""), ensure_ascii=False)
+        st.markdown(
+            """
+            <div class="pdf-note">
+                Download a formatted PDF report for documentation, presentation, or analyst review.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    summary_df = pd.DataFrame([download_summary])
-    csv_buffer = StringIO()
-    summary_df.to_csv(csv_buffer, index=False)
+        st.download_button(
+            label="Download ESG Analyst Briefing PDF",
+            data=pdf_bytes,
+            file_name="esg_analyst_briefing_report.pdf",
+            mime="application/pdf",
+        )
 
-    st.download_button(
-        label="Download ESG Briefing as CSV",
-        data=csv_buffer.getvalue(),
-        file_name="esg_analyst_briefing.csv",
-        mime="text/csv",
-    )
+    except Exception as exc:
+        st.error("PDF report could not be generated.")
+        st.write(str(exc))
+        st.info("Please make sure reportlab is included in requirements.txt.")
 
     st.caption(
         f"ESG model: {summary.get('esg_model_name', 'N/A')} · "
@@ -1955,10 +2123,7 @@ def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
 
 render_top_brand()
 render_hero()
-render_context_cards()
 
-# Important: this is a closed HTML card.
-# It does not wrap Streamlit widgets, so it will not create a blank rounded frame.
 st.markdown(
     """
     <div class="input-panel">
