@@ -7,3 +7,4 @@ accelerate
 safetensors
 pypdf
 python-docx
+reportlab
