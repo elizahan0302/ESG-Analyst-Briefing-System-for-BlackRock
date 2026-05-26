@@ -85,8 +85,6 @@ st.markdown(
         --sage-soft: #e9eee4;
         --sage: #8fa891;
         --sage-dark: #536a5f;
-        --button: #536a5f;
-        --button-hover: #465a51;
         --green-soft: #e6eee5;
         --amber-soft: #f4eedc;
         --red-soft: #f2e5e3;
@@ -100,10 +98,6 @@ st.markdown(
     }
 
     html, body, [class*="css"] {
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    h1, h2, h3, h4, p, li, label, span {
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -130,9 +124,7 @@ st.markdown(
         padding: 0.95rem 1.2rem !important;
         font-weight: 780 !important;
         font-size: 1rem !important;
-        letter-spacing: 0.01em !important;
         box-shadow: 0 10px 24px rgba(47, 48, 45, 0.14) !important;
-        transition: all 0.18s ease !important;
     }
 
     div.stButton > button p,
@@ -144,10 +136,8 @@ st.markdown(
 
     div.stButton > button:hover {
         background: linear-gradient(135deg, #465a51 0%, #61736a 100%) !important;
-        border-color: #465a51 !important;
         color: #ffffff !important;
         transform: translateY(-1px);
-        box-shadow: 0 14px 30px rgba(47, 48, 45, 0.18) !important;
     }
 
     div.stDownloadButton > button {
@@ -174,13 +164,7 @@ st.markdown(
         border: 1px solid var(--line) !important;
         background: #ffffff !important;
         color: var(--ink) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
         padding: 1rem !important;
-    }
-
-    textarea:focus {
-        border-color: #aaa596 !important;
-        box-shadow: 0 0 0 3px rgba(174, 184, 162, 0.22) !important;
     }
 
     [data-testid="stFileUploader"] section {
@@ -215,7 +199,6 @@ st.markdown(
         color: var(--sage-dark);
         font-size: 1.2rem;
         font-weight: 850;
-        letter-spacing: -0.04em;
     }
 
     .brand-text-main {
@@ -396,7 +379,6 @@ st.markdown(
         border-radius: 14px;
         padding: 0.55rem 1.1rem;
         border: 1px solid transparent;
-        transition: all 0.18s ease;
         color: var(--ink-soft);
     }
 
@@ -437,7 +419,6 @@ st.markdown(
     .module-title {
         font-size: 1.15rem;
         font-weight: 820;
-        letter-spacing: -0.03em;
         color: var(--ink);
     }
 
@@ -498,24 +479,18 @@ st.markdown(
         font-size: 0.94rem;
     }
 
-    .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
     .metric-card {
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 22px;
         padding: 1.25rem;
-        height: 184px;
-        min-height: 184px;
+        height: 172px;
+        min-height: 172px;
         display: grid;
-        grid-template-rows: 46px 1fr 36px;
+        grid-template-rows: 42px 1fr 34px;
         align-items: center;
         overflow: hidden;
+        margin-bottom: 1rem;
     }
 
     .metric-label {
@@ -530,7 +505,7 @@ st.markdown(
 
     .metric-value {
         color: #1e2420;
-        font-size: clamp(1.35rem, 1.85vw, 1.62rem);
+        font-size: clamp(1.28rem, 1.8vw, 1.6rem);
         font-weight: 900;
         letter-spacing: -0.045em;
         line-height: 1.08;
@@ -551,7 +526,7 @@ st.markdown(
     .risk-card {
         border-radius: 22px;
         padding: 1.2rem 1.25rem;
-        margin-top: 1.1rem;
+        margin-top: 0.2rem;
         border: 1px solid var(--line);
     }
 
@@ -715,7 +690,7 @@ st.markdown(
 
         .metric-card {
             height: auto;
-            min-height: 160px;
+            min-height: 150px;
         }
 
         .metric-value {
@@ -1388,29 +1363,6 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         esg_related_chunks=esg_related_chunks,
     )
 
-    if overall_risk_level == "High":
-        overall_interpretation = (
-            f"This document is primarily related to {top_esg_category} ESG issues, "
-            f"with the dominant financial sentiment being {dominant_sentiment}. "
-            f"The overall risk level is High because the screening process identified "
-            f"multiple or sufficiently material negative ESG-related signals. The result "
-            f"should be used as an early-stage screening signal and reviewed together with "
-            f"supporting evidence and analyst judgment."
-        )
-    elif overall_risk_level == "Medium":
-        overall_interpretation = (
-            f"This document contains ESG-related content, primarily associated with "
-            f"{top_esg_category}. The dominant sentiment is {dominant_sentiment}. "
-            f"The overall ESG risk level is Medium, suggesting that analysts should monitor "
-            f"the issue and review supporting company disclosures, peer practices, and external evidence."
-        )
-    else:
-        overall_interpretation = (
-            f"This document is primarily classified as {top_esg_category}, with "
-            f"{dominant_sentiment} financial sentiment. Based on the analyzed content, "
-            f"the document does not indicate immediate ESG risk escalation."
-        )
-
     all_text = " ".join(results_df["chunk_text"].astype(str).tolist())
 
     summary = {
@@ -1424,7 +1376,7 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
         "high_risk_chunks": high_risk_chunks,
         "medium_risk_chunks": medium_risk_chunks,
         "low_risk_chunks": low_risk_chunks,
-        "overall_interpretation": overall_interpretation,
+        "overall_interpretation": get_document_recommended_action(overall_risk_level),
         "recommended_action": get_document_recommended_action(overall_risk_level),
         "esg_category_distribution": distribution_dict(results_df["esg_category"]),
         "sentiment_distribution": distribution_dict(results_df["sentiment"]),
@@ -1445,7 +1397,6 @@ def build_document_summary(results_df: pd.DataFrame, total_words: int) -> Dict[s
     }
 
     summary["executive_summary"] = build_executive_summary(summary)
-
     return summary
 
 
@@ -1540,15 +1491,6 @@ def analyze_text(input_text: str) -> Dict[str, Any]:
 # =========================================================
 # PDF Report Generation
 # =========================================================
-
-def safe_json_for_pdf(value: Any) -> str:
-    try:
-        if isinstance(value, (dict, list)):
-            return json.dumps(value, ensure_ascii=False, indent=2)
-        return str(value)
-    except Exception:
-        return str(value)
-
 
 def create_pdf_report(summary: Dict[str, Any]) -> bytes:
     if SimpleDocTemplate is None:
@@ -1656,7 +1598,6 @@ def create_pdf_report(summary: Dict[str, Any]) -> bytes:
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"),
                 ("FONTSIZE", (0, 0), (-1, -1), 8.5),
-                ("LEADING", (0, 0), (-1, -1), 11),
                 ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7d2c6")),
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbfaf7")]),
@@ -1670,7 +1611,6 @@ def create_pdf_report(summary: Dict[str, Any]) -> bytes:
     story.append(metric_table)
 
     story.append(Paragraph("3. Risk Interpretation", h2_style))
-    story.append(Paragraph(esc(summary.get("overall_interpretation", "")), body_style))
     story.append(Paragraph(esc(summary.get("recommended_action", "")), body_style))
 
     story.append(Paragraph("4. ESG Category Breakdown", h2_style))
@@ -1867,6 +1807,34 @@ def render_hero() -> None:
     st.markdown("</div>", unsafe_allow_html=True)
 
 
+def render_metric_cards(summary: Dict[str, Any]) -> None:
+    metrics = [
+        ("Overall ESG Risk", summary.get("overall_risk_level", "N/A"), "Risk profile"),
+        ("Top ESG Category", summary.get("top_esg_category", "N/A"), "Dominant topic"),
+        ("Dominant Sentiment", summary.get("dominant_sentiment", "N/A"), "Tone of document"),
+        ("Estimated Words", f"{summary.get('total_words', 0):,}", "Words submitted"),
+        ("ESG Confidence", format_pct(summary.get("average_esg_confidence", 0)), "Avg. ESG signal"),
+        ("Sentiment Confidence", format_pct(summary.get("average_sentiment_confidence", 0)), "Avg. sentiment signal"),
+    ]
+
+    row1 = st.columns(3, gap="medium")
+    row2 = st.columns(3, gap="medium")
+    columns = list(row1) + list(row2)
+
+    for col, (label, value, caption) in zip(columns, metrics):
+        with col:
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-label">{esc(label)}</div>
+                    <div class="metric-value" title="{esc(value)}">{esc(value)}</div>
+                    <div class="metric-caption">{esc(caption)}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
 def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], labels: List[str]) -> None:
     st.markdown(
         f"""
@@ -1896,32 +1864,6 @@ def render_distribution(title: str, distribution: Dict[str, Dict[str, float]], l
         )
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-def render_metric_cards(summary: Dict[str, Any]) -> None:
-    metrics = [
-        ("Overall ESG Risk", summary.get("overall_risk_level", "N/A"), "Risk profile"),
-        ("Top ESG Category", summary.get("top_esg_category", "N/A"), "Dominant topic"),
-        ("Dominant Sentiment", summary.get("dominant_sentiment", "N/A"), "Tone of document"),
-        ("Estimated Words", f"{summary.get('total_words', 0):,}", "Words submitted"),
-        ("ESG Confidence", format_pct(summary.get("average_esg_confidence", 0)), "Avg. ESG signal"),
-        ("Sentiment Confidence", format_pct(summary.get("average_sentiment_confidence", 0)), "Avg. sentiment signal"),
-    ]
-
-    metric_html = '<div class="metrics-grid">'
-
-    for label, value, caption in metrics:
-        metric_html += f"""
-        <div class="metric-card">
-            <div class="metric-label">{esc(label)}</div>
-            <div class="metric-value" title="{esc(value)}">{esc(value)}</div>
-            <div class="metric-caption">{esc(caption)}</div>
-        </div>
-        """
-
-    metric_html += "</div>"
-
-    st.markdown(metric_html, unsafe_allow_html=True)
 
 
 def render_esg_analyst_briefing(summary: Dict[str, Any]) -> None:
