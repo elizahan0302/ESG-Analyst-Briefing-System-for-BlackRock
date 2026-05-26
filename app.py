@@ -1,5 +1,5 @@
 # app.py
-# Project: AI-powered ESG Analyst Briefing System for BlackRock
+# Project: ESG Analyst Briefing System for BlackRock
 # ISOM5240 Educational Prototype
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ except ImportError:
 # Configuration
 # =========================================================
 
-PROJECT_NAME = "AI-powered ESG Analyst Briefing System for BlackRock"
+PROJECT_NAME = "ESG Analyst Briefing System for BlackRock"
 APP_NAME = "ESG Analyst Briefing System"
 
 DEFAULT_MAX_WORDS = 180
@@ -1567,7 +1567,7 @@ def create_pdf_report(summary: Dict[str, Any]) -> bytes:
     story.append(Paragraph("ESG Analyst Briefing Report", title_style))
     story.append(
         Paragraph(
-            "AI-powered ESG screening output for research triage. "
+            "ESG screening output for research triage. "
             "This report is an educational prototype and does not provide investment advice.",
             subtitle_style,
         )
@@ -1778,12 +1778,12 @@ def render_hero() -> None:
                 <div class="eyebrow">ESG investment research assistant</div>
                 <div class="hero-title">{esc(APP_NAME)}</div>
                 <div class="hero-subtitle">
-                    AI-powered ESG analyst briefing for investment research
+                    ESG analyst briefing for investment research
                 </div>
                 <div class="hero-description">
-                    Use deep learning pipelines to classify corporate text into ESG topics,
-                    detect financial sentiment, identify risk drivers, and produce a practical
-                    analyst briefing for early-stage review.
+                    Classify corporate text into ESG topics, detect financial sentiment,
+                    identify risk drivers, and produce a practical analyst briefing for
+                    early-stage review.
                 </div>
             </div>
             """,
