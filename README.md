@@ -265,6 +265,7 @@ BlackRock_ESG_Risk_Analyzer/
 │
 ├── README.md
 └── requirements.txt
+```
 
 ## 10. Installation
 
