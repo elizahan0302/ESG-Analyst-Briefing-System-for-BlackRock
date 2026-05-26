@@ -1,6 +1,5 @@
 # app.py
 # Project: ESG Analyst Briefing System for BlackRock
-# ISOM5240 Educational Prototype
 
 from __future__ import annotations
 
