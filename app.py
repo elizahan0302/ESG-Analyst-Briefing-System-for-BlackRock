@@ -1,6 +1,5 @@
 # app.py
-# BlackRock ESG Risk Analyzer
-# ISOM5240 Educational Prototype
+# ESG Analyst Briefing System for BlackRock
 
 from __future__ import annotations
 
@@ -32,8 +31,8 @@ except ImportError:
 # =========================================================
 
 st.set_page_config(
-    page_title="BlackRock ESG Risk Analyzer",
-    page_icon="◌",
+    page_title="ESG Analyst Briefing System for BlackRock",
+    page_icon="🌱",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
