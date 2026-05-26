@@ -59,14 +59,16 @@ st.markdown(
         --bg: #f6f4f0;
         --bg-soft: #fbfaf7;
         --card: #ffffff;
-        --ink: #2f302d;
+        --ink: #232522;
         --ink-soft: #5f625b;
-        --muted: #8b8e86;
+        --muted: #858a80;
         --line: #e5e1d8;
         --line-strong: #d7d2c6;
         --sage-soft: #e9eee4;
         --sage: #8fa891;
         --sage-dark: #536a5f;
+        --button: #536a5f;
+        --button-hover: #465a51;
         --green-soft: #e6eee5;
         --amber-soft: #f4eedc;
         --red-soft: #f2e5e3;
@@ -75,7 +77,7 @@ st.markdown(
     }
 
     .stApp {
-        background: radial-gradient(circle at top left, #f0ede6 0, #f6f4f0 32%, #fbfaf7 100%);
+        background: radial-gradient(circle at top left, #f0ede6 0, #f6f4f0 34%, #fbfaf7 100%);
         color: var(--ink);
     }
 
@@ -83,13 +85,8 @@ st.markdown(
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    h1, h2, h3, h4 {
-        color: var(--ink);
-        letter-spacing: -0.03em;
-    }
-
-    p, li, label, span {
-        color: var(--ink-soft);
+    h1, h2, h3, h4, p, li, label, span {
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     #MainMenu {visibility: hidden;}
@@ -106,35 +103,44 @@ st.markdown(
         display: none;
     }
 
+    /* Button readability fix */
     div.stButton > button {
         width: 100%;
-        background: linear-gradient(135deg, #536a5f 0%, #6f8178 100%);
-        color: #fbfaf7;
-        border: 1px solid rgba(83, 106, 95, 0.9);
-        border-radius: 16px;
-        padding: 0.92rem 1.2rem;
-        font-weight: 680;
-        letter-spacing: 0.01em;
-        box-shadow: 0 10px 24px rgba(47, 48, 45, 0.12);
-        transition: all 0.18s ease;
+        background: linear-gradient(135deg, #536a5f 0%, #6f8178 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(83, 106, 95, 0.95) !important;
+        border-radius: 16px !important;
+        padding: 0.95rem 1.2rem !important;
+        font-weight: 780 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.01em !important;
+        box-shadow: 0 10px 24px rgba(47, 48, 45, 0.14) !important;
+        transition: all 0.18s ease !important;
+    }
+
+    div.stButton > button p,
+    div.stButton > button span,
+    div.stButton > button div {
+        color: #ffffff !important;
+        font-weight: 780 !important;
     }
 
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #465a51 0%, #61736a 100%);
-        border-color: #465a51;
-        color: #ffffff;
+        background: linear-gradient(135deg, #465a51 0%, #61736a 100%) !important;
+        border-color: #465a51 !important;
+        color: #ffffff !important;
         transform: translateY(-1px);
-        box-shadow: 0 14px 30px rgba(47, 48, 45, 0.16);
+        box-shadow: 0 14px 30px rgba(47, 48, 45, 0.18) !important;
     }
 
     div.stDownloadButton > button {
         width: 100%;
-        background: #f8f6f1;
-        color: var(--ink);
-        border: 1px solid var(--line-strong);
-        border-radius: 16px;
-        padding: 0.82rem 1.1rem;
-        font-weight: 620;
+        background: #f8f6f1 !important;
+        color: var(--ink) !important;
+        border: 1px solid var(--line-strong) !important;
+        border-radius: 16px !important;
+        padding: 0.82rem 1.1rem !important;
+        font-weight: 650 !important;
     }
 
     textarea {
@@ -159,10 +165,11 @@ st.markdown(
         padding: 1.2rem;
     }
 
+    /* Top brand: removed prototype pill */
     .top-brand {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         margin-bottom: 0.9rem;
     }
 
@@ -183,14 +190,14 @@ st.markdown(
         justify-content: center;
         color: var(--sage-dark);
         font-size: 1.2rem;
-        font-weight: 800;
+        font-weight: 850;
         letter-spacing: -0.04em;
     }
 
     .brand-text-main {
         color: var(--ink);
         font-size: 1.06rem;
-        font-weight: 770;
+        font-weight: 800;
         line-height: 1.05;
     }
 
@@ -198,18 +205,6 @@ st.markdown(
         color: var(--ink-soft);
         font-size: 0.92rem;
         line-height: 1.1;
-    }
-
-    .prototype-pill {
-        display: inline-flex;
-        align-items: center;
-        background: rgba(255,255,255,0.64);
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 0.58rem 0.9rem;
-        font-size: 0.86rem;
-        color: var(--ink-soft);
-        font-weight: 620;
     }
 
     .hero-shell {
@@ -248,7 +243,7 @@ st.markdown(
         background: rgba(255,255,255,0.54);
         color: var(--ink-soft);
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 740;
         letter-spacing: 0.035em;
         text-transform: uppercase;
         margin-bottom: 1rem;
@@ -257,7 +252,7 @@ st.markdown(
     .hero-title {
         font-size: clamp(2.25rem, 4.8vw, 4.4rem);
         line-height: 0.96;
-        font-weight: 800;
+        font-weight: 850;
         letter-spacing: -0.07em;
         color: var(--ink);
         margin-bottom: 0.95rem;
@@ -268,7 +263,7 @@ st.markdown(
         line-height: 1.55;
         color: var(--sage-dark);
         max-width: 780px;
-        font-weight: 570;
+        font-weight: 620;
         margin-bottom: 0.9rem;
     }
 
@@ -282,7 +277,7 @@ st.markdown(
     .workflow-card {
         position: relative;
         z-index: 1;
-        background: rgba(255,255,255,0.78);
+        background: rgba(255,255,255,0.80);
         border: 1px solid rgba(215,210,198,0.95);
         border-radius: 24px;
         padding: 1.35rem;
@@ -294,7 +289,7 @@ st.markdown(
     .workflow-title {
         color: var(--ink);
         font-size: 1.02rem;
-        font-weight: 760;
+        font-weight: 800;
         margin-bottom: 0.9rem;
     }
 
@@ -306,6 +301,7 @@ st.markdown(
         border-bottom: 1px solid rgba(215,210,198,0.55);
         color: var(--ink-soft);
         font-size: 0.92rem;
+        line-height: 1.45;
     }
 
     .workflow-step:last-child {
@@ -322,32 +318,36 @@ st.markdown(
         background: var(--sage-soft);
         color: var(--ink);
         font-size: 0.78rem;
-        font-weight: 720;
+        font-weight: 780;
         flex: 0 0 auto;
     }
 
+    /* Context cards: adaptive width and height, full text visible */
     .context-card {
-        height: 190px;
-        min-height: 190px;
-        max-height: 190px;
-        background: rgba(255,255,255,0.82);
+        min-height: 245px;
+        height: auto;
+        background: rgba(255,255,255,0.84);
         border: 1px solid var(--line);
         border-radius: 24px;
-        padding: 1.35rem;
+        padding: 1.45rem;
         box-shadow: var(--shadow-soft);
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-        overflow: hidden;
+        display: grid;
+        grid-template-columns: 3.4rem minmax(0, 1fr);
+        gap: 1.15rem;
+        align-items: start;
+        overflow: visible;
+        margin-bottom: 0.2rem;
     }
 
     .context-card-content {
-        padding-right: 0.2rem;
+        min-width: 0;
+        padding-right: 0.25rem;
+        overflow-wrap: break-word;
     }
 
     .context-icon {
-        width: 3.25rem;
-        height: 3.25rem;
+        width: 3.4rem;
+        height: 3.4rem;
         border-radius: 999px;
         background: #f1efeb;
         display: flex;
@@ -355,26 +355,27 @@ st.markdown(
         justify-content: center;
         color: var(--sage-dark);
         font-size: 0.76rem;
-        font-weight: 800;
+        font-weight: 850;
         letter-spacing: 0.02em;
-        flex: 0 0 auto;
         border: 1px solid rgba(215,210,198,0.85);
     }
 
     .context-title {
-        font-size: 1rem;
-        font-weight: 760;
+        font-size: 1.04rem;
+        font-weight: 830;
         color: var(--ink);
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.58rem;
+        line-height: 1.2;
     }
 
     .context-text {
-        font-size: 0.86rem;
-        line-height: 1.5;
+        font-size: 0.88rem;
+        line-height: 1.52;
         color: var(--ink-soft);
+        overflow-wrap: break-word;
     }
 
-    .input-studio {
+    .input-panel {
         background: rgba(255, 255, 255, 0.86);
         border: 1px solid var(--line);
         border-radius: 30px;
@@ -384,15 +385,15 @@ st.markdown(
         margin-bottom: 1.2rem;
     }
 
-    .input-studio-title {
+    .input-panel-title {
         font-size: 1.45rem;
-        font-weight: 780;
+        font-weight: 830;
         letter-spacing: -0.04em;
         color: var(--ink);
         margin-bottom: 0.35rem;
     }
 
-    .input-studio-subtitle {
+    .input-panel-subtitle {
         font-size: 0.96rem;
         color: var(--ink-soft);
         line-height: 1.55;
@@ -404,7 +405,7 @@ st.markdown(
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--muted);
-        font-weight: 760;
+        font-weight: 800;
         margin-top: 1.15rem;
         margin-bottom: 0.5rem;
     }
@@ -457,14 +458,14 @@ st.markdown(
         justify-content: center;
         color: var(--sage-dark);
         font-size: 0.78rem;
-        font-weight: 800;
+        font-weight: 850;
         flex: 0 0 auto;
         border: 1px solid var(--line);
     }
 
     .module-title {
         font-size: 1.15rem;
-        font-weight: 760;
+        font-weight: 820;
         letter-spacing: -0.03em;
         color: var(--ink);
     }
@@ -499,7 +500,7 @@ st.markdown(
 
     .result-title {
         font-size: 1.65rem;
-        font-weight: 800;
+        font-weight: 850;
         letter-spacing: -0.04em;
         color: var(--ink);
         margin-bottom: 1rem;
@@ -515,7 +516,7 @@ st.markdown(
 
     .briefing-title {
         color: var(--ink);
-        font-weight: 780;
+        font-weight: 830;
         margin-bottom: 0.7rem;
         font-size: 1.03rem;
     }
@@ -526,42 +527,47 @@ st.markdown(
         font-size: 0.94rem;
     }
 
+    /* Metric cards: stronger contrast and parallel layout */
     .metric-card {
         background: var(--bg-soft);
         border: 1px solid var(--line);
         border-radius: 22px;
         padding: 1.25rem;
-        height: 170px;
-        min-height: 170px;
-        max-height: 170px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        height: 184px;
+        min-height: 184px;
+        max-height: 184px;
+        display: grid;
+        grid-template-rows: 46px 1fr 36px;
+        align-items: center;
         overflow: hidden;
     }
 
     .metric-label {
-        color: var(--muted);
+        color: #7b8077;
         font-size: 0.78rem;
-        font-weight: 780;
+        font-weight: 850;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.07em;
         line-height: 1.35;
+        align-self: start;
     }
 
     .metric-value {
-        color: var(--ink);
-        font-size: 1.28rem;
-        font-weight: 800;
-        letter-spacing: -0.04em;
+        color: #1e2420;
+        font-size: 1.6rem;
+        font-weight: 900;
+        letter-spacing: -0.045em;
+        line-height: 1.08;
         word-break: break-word;
-        line-height: 1.12;
+        align-self: center;
     }
 
     .metric-caption {
-        color: var(--ink-soft);
-        font-size: 0.86rem;
+        color: #5b6058;
+        font-size: 0.88rem;
+        font-weight: 600;
         line-height: 1.35;
+        align-self: end;
     }
 
     .risk-card {
@@ -580,14 +586,14 @@ st.markdown(
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--muted);
-        font-weight: 780;
+        font-weight: 830;
         margin-bottom: 0.45rem;
     }
 
     .risk-value {
         color: var(--ink);
         font-size: 1.85rem;
-        font-weight: 800;
+        font-weight: 880;
         letter-spacing: -0.05em;
         margin-bottom: 0.3rem;
     }
@@ -603,7 +609,7 @@ st.markdown(
     .breakdown-label {
         color: var(--ink);
         font-size: 0.9rem;
-        font-weight: 640;
+        font-weight: 680;
     }
 
     .breakdown-track {
@@ -636,7 +642,7 @@ st.markdown(
         border: 1px solid rgba(174,184,162,0.45);
         color: var(--ink-soft);
         font-size: 0.84rem;
-        font-weight: 640;
+        font-weight: 680;
     }
 
     .evidence-card {
@@ -661,7 +667,7 @@ st.markdown(
         border: 1px solid var(--line);
         border-radius: 18px;
         padding: 1rem;
-        min-height: 110px;
+        min-height: 112px;
     }
 
     .materiality-label {
@@ -673,7 +679,7 @@ st.markdown(
 
     .materiality-value {
         color: var(--ink);
-        font-weight: 800;
+        font-weight: 850;
         font-size: 1.05rem;
     }
 
@@ -708,16 +714,21 @@ st.markdown(
         border-top: 1px solid var(--line);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
         .context-card {
-            height: auto;
-            min-height: 160px;
-            max-height: none;
+            min-height: 260px;
+            grid-template-columns: 1fr;
         }
 
+        .context-icon {
+            margin-bottom: 0.2rem;
+        }
+    }
+
+    @media (max-width: 900px) {
         .metric-card {
             height: auto;
-            min-height: 150px;
+            min-height: 160px;
             max-height: none;
         }
 
@@ -1567,7 +1578,6 @@ def render_top_brand() -> None:
                     <div class="brand-text-sub">ESG Analyst Briefing System</div>
                 </div>
             </div>
-            <div class="prototype-pill">Educational Prototype</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1947,18 +1957,22 @@ render_top_brand()
 render_hero()
 render_context_cards()
 
+# Important: this is a closed HTML card.
+# It does not wrap Streamlit widgets, so it will not create a blank rounded frame.
 st.markdown(
     """
-    <div class="input-studio">
-        <div class="input-studio-title">Start an ESG Screening</div>
-        <div class="input-studio-subtitle">
+    <div class="input-panel">
+        <div class="input-panel-title">Start an ESG Screening</div>
+        <div class="input-panel-subtitle">
             Choose a source type, then provide ESG-related text or upload a document.
             The app will generate an ESG analyst briefing for investment research screening.
         </div>
-        <div class="mode-caption">Choose analysis source</div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown('<div class="mode-caption">Choose analysis source</div>', unsafe_allow_html=True)
 
 input_mode = st.radio(
     "Choose analysis source",
@@ -1967,19 +1981,19 @@ input_mode = st.radio(
     label_visibility="collapsed",
 )
 
-st.markdown('<div class="module-card">', unsafe_allow_html=True)
-
 if input_mode == "Paste Text":
     st.markdown(
         """
-        <div class="module-title-row">
-            <div class="module-badge">TXT</div>
-            <div><div class="module-title">Paste ESG-related text</div></div>
-        </div>
-        <div class="module-subtitle">
-            Paste one ESG-relevant paragraph, article excerpt, or full report text.
-            Long content will be analyzed internally in smaller model-safe segments,
-            while only the ESG analyst briefing is shown.
+        <div class="module-card">
+            <div class="module-title-row">
+                <div class="module-badge">TXT</div>
+                <div><div class="module-title">Paste ESG-related text</div></div>
+            </div>
+            <div class="module-subtitle">
+                Paste one ESG-relevant paragraph, article excerpt, or full report text.
+                Long content will be analyzed internally in smaller model-safe segments,
+                while only the ESG analyst briefing is shown.
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2043,14 +2057,16 @@ if input_mode == "Paste Text":
 elif input_mode == "Upload PDF / Word":
     st.markdown(
         """
-        <div class="module-title-row">
-            <div class="module-badge">DOC</div>
-            <div><div class="module-title">Upload an ESG document</div></div>
-        </div>
-        <div class="module-subtitle">
-            Upload a PDF, Word document, or TXT file. The app will extract the text,
-            analyze the document internally in smaller model-safe segments, and return
-            a concise ESG analyst briefing.
+        <div class="module-card">
+            <div class="module-title-row">
+                <div class="module-badge">DOC</div>
+                <div><div class="module-title">Upload an ESG document</div></div>
+            </div>
+            <div class="module-subtitle">
+                Upload a PDF, Word document, or TXT file. The app will extract the text,
+                analyze the document internally in smaller model-safe segments, and return
+                a concise ESG analyst briefing.
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2101,9 +2117,6 @@ elif input_mode == "Upload PDF / Word":
             except Exception as exc:
                 st.error("The uploaded document could not be analyzed.")
                 st.write(str(exc))
-
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown(
     """
