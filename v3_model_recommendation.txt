@@ -1,0 +1,15 @@
+v3 model path: /Users/eliza/Desktop/MSBA/Spring-2st/Deep Learning with Python/Project/BlackRock_ESG_Risk_Analyzer/04_models/blackrock_esg_classifier_v3
+old fine-tuned model URL: https://huggingface.co/johnsonzhangzzz/blackrock_esg_classifier
+baseline model URL: https://huggingface.co/yiyanghkust/finbert-esg
+datasets used: esg_test_v3, esg_real_world_50_samples, manual_esg_test
+v3 accuracy on esg_test_v3: 0.8261
+v3 macro F1 on esg_test_v3: 0.8170
+baseline accuracy on esg_test_v3: 0.6957
+baseline macro F1 on esg_test_v3: 0.6763
+old fine-tuned accuracy on esg_test_v3: 0.2609
+old fine-tuned macro F1 on esg_test_v3: 0.1034
+runtime comparison on esg_test_v3: v3=0.7736s baseline=0.6855s
+main error patterns: {'False_ESG_signal': 9, 'Governance_vs_Environmental': 4, 'Other': 1, 'Social_vs_Governance': 1, 'Governance_vs_Social': 1}
+v3 reliable enough for app: yes
+Confidence fallback is optional and can remain disabled if you want a pure v3 deployment.
+final recommendation: Recommend v3 only.
