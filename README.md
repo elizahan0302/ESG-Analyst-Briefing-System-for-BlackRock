@@ -9,7 +9,7 @@ The ESG Analyst Briefing System for BlackRock is a Streamlit application for ESG
 - generating ESG risk signals, and
 - producing structured analyst briefing outputs.
 
-The final project uses the v3 fine-tuned ESG classifier as the main project-specific model and keeps a baseline ESG classifier as a safeguard for low-confidence cases.
+The final project keeps the deployed app model repo, the matching local training artifact, and the baseline reference model clearly separated.
 
 This report is for informational purposes only, the information and opinions contained herein do not constitute investment advice to any person.
 
@@ -17,11 +17,15 @@ This report is for informational purposes only, the information and opinions con
 
 ### ESG Classification
 
-Primary model:
+Primary app model:
 
-- `04_models/blackrock_esg_classifier_v3`
+- `johnsonzhangzzz/blackrock_esg_classifier`
 
-Baseline safeguard model:
+Local training artifact:
+
+- `04_models/local_final_esg_model`
+
+Baseline reference model:
 
 - `yiyanghkust/finbert-esg`
 
@@ -31,15 +35,17 @@ Baseline safeguard model:
 
 ## Final Model Logic
 
-The final application uses the v3 fine-tuned ESG classifier first.
+The deployed app model is the Hugging Face repo `johnsonzhangzzz/blackrock_esg_classifier`.
 
-If confidence-based fallback is enabled, the logic is:
+The local folder `04_models/local_final_esg_model` is the matching training artifact kept in this repository for reproducibility.
 
-1. Run the local v3 ESG classifier.
-2. If the v3 prediction confidence is high enough, use the v3 result.
-3. If the v3 confidence is low, use `yiyanghkust/finbert-esg` as a safeguard.
+If confidence-based fallback is enabled in a future update, the intended logic is:
 
-This keeps the fine-tuned v3 model as the primary project-specific classifier while reducing low-confidence prediction risk.
+1. Run the deployed app model first.
+2. If the deployed model confidence is high enough, use that result.
+3. If the deployed model confidence is low, use `yiyanghkust/finbert-esg` as a safeguard.
+
+This naming keeps the app-facing model, the local training artifact, and the baseline reference model clearly separated.
 
 ## ESG Labels
 
@@ -58,29 +64,29 @@ The final ESG classification labels are:
 
 Processed training data:
 
-- `01_data/processed/esg_combined_v3.csv`
-- `01_data/processed/esg_train_v3.csv`
-- `01_data/processed/esg_validation_v3.csv`
-- `01_data/processed/esg_test_v3.csv`
+- `01_data/processed/esg_combined.csv`
+- `01_data/processed/esg_train.csv`
+- `01_data/processed/esg_validation.csv`
+- `01_data/processed/esg_test.csv`
 
 Manual and evaluation data:
 
 - `01_data/manual_test/esg_real_world_50_samples.csv`
-- `01_data/manual_test/esg_hard_examples_v3.csv`
+- `01_data/manual_test/esg_hard_examples.csv`
 
 ## Final Model Files
 
-- `04_models/blackrock_esg_classifier_v3/`
+- `04_models/local_final_esg_model/`
 
 This folder contains the final fine-tuned DistilBERT ESG classifier used by the project.
 
 ## Final Result Files
 
-- `05_results/v3_finetuned_esg_metrics.xlsx`
-- `05_results/v3_finetuned_vs_baseline_comparison.xlsx`
-- `05_results/v3_finetuned_vs_baseline_comparison.csv`
-- `05_results/v3_finetuned_error_analysis.csv`
-- `05_results/v3_model_recommendation.txt`
+- `05_results/local_final_model_evaluation_workbook.xlsx`
+- `05_results/local_final_model_vs_reference_models_comparison.xlsx`
+- `05_results/local_final_model_vs_reference_models_comparison.csv`
+- `05_results/local_final_model_error_analysis.csv`
+- `05_results/final_model_deployment_recommendation.txt`
 
 These files provide the final evidence for model evaluation, comparison, error analysis, and model selection.
 
@@ -92,25 +98,25 @@ BlackRock_ESG_Risk_Analyzer/
 ├── requirements.txt
 ├── 01_data/
 │   ├── processed/
-│   │   ├── esg_combined_v3.csv
-│   │   ├── esg_train_v3.csv
-│   │   ├── esg_validation_v3.csv
-│   │   └── esg_test_v3.csv
+│   │   ├── esg_combined.csv
+│   │   ├── esg_train.csv
+│   │   ├── esg_validation.csv
+│   │   └── esg_test.csv
 │   └── manual_test/
 │       ├── esg_real_world_50_samples.csv
-│       └── esg_hard_examples_v3.csv
+│       └── esg_hard_examples.csv
 ├── 02_notebooks/
-│   └── 05_finetune_esg_distilbert_v3.py
+│   └── 05_train_local_final_esg_model.ipynb
 ├── 03_app/
 │   └── app.py
 ├── 04_models/
-│   └── blackrock_esg_classifier_v3/
+│   └── local_final_esg_model/
 ├── 05_results/
-│   ├── v3_finetuned_esg_metrics.xlsx
-│   ├── v3_finetuned_vs_baseline_comparison.xlsx
-│   ├── v3_finetuned_vs_baseline_comparison.csv
-│   ├── v3_finetuned_error_analysis.csv
-│   └── v3_model_recommendation.txt
+│   ├── local_final_model_evaluation_workbook.xlsx
+│   ├── local_final_model_vs_reference_models_comparison.xlsx
+│   ├── local_final_model_vs_reference_models_comparison.csv
+│   ├── local_final_model_error_analysis.csv
+│   └── final_model_deployment_recommendation.txt
 ├── 06_report/
 └── 07_presentation/
 ```
@@ -154,7 +160,7 @@ For Streamlit Cloud deployment:
 - Main file path: `03_app/app.py`
 - Python dependencies: `requirements.txt`
 
-Make sure the deployment environment includes the v3 model folder or has access to the required model artifacts.
+Make sure the deployment environment includes the local final model folder or has access to the required model artifacts.
 
 ## Core Functions
 
@@ -169,9 +175,9 @@ The application supports:
 
 ## Final Recommendation
 
-The v3 fine-tuned ESG classifier is the best current project-specific model in this repository.
+The local final ESG model is the best reproducible training artifact in this repository.
 
-It outperformed the older fine-tuned versions and exceeded the baseline ESG classifier on the final v3 test set. The baseline model remains useful as a safeguard for low-confidence cases, but the v3 model is the main ESG classifier for the final project.
+It outperformed the baseline reference model on the final internal test set. The deployed app model repo should be kept aligned with this local final training artifact.
 
 ## Notes
 
