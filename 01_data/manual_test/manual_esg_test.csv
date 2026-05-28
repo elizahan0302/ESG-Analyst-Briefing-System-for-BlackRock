@@ -1,0 +1,21 @@
+text,esg_label,sentiment_label,risk_label,source,company
+The company reported a significant reduction in carbon emissions through renewable energy adoption.,Environmental,Positive,Low,manual,Company A
+The company faced regulatory criticism for failing to disclose climate-related risks.,Environmental,Negative,High,manual,Company B
+The firm increased investment in water conservation and waste reduction programs.,Environmental,Positive,Low,manual,Company C
+The company reported higher greenhouse gas emissions from its manufacturing operations.,Environmental,Negative,High,manual,Company D
+The company published its annual climate transition plan.,Environmental,Neutral,Medium,manual,Company E
+The company improved workplace safety training and reduced employee injury rates.,Social,Positive,Low,manual,Company F
+The firm was criticized for poor labor conditions in its supplier factories.,Social,Negative,High,manual,Company G
+The company expanded diversity and inclusion programs across global offices.,Social,Positive,Low,manual,Company H
+The company reported a data privacy incident affecting customer information.,Social,Negative,High,manual,Company I
+The company announced a new employee wellness policy.,Social,Neutral,Medium,manual,Company J
+The board strengthened audit committee oversight and compliance controls.,Governance,Positive,Low,manual,Company K
+The company was investigated for bribery and weak internal controls.,Governance,Negative,High,manual,Company L
+The firm improved board independence by appointing additional independent directors.,Governance,Positive,Low,manual,Company M
+The company faced shareholder criticism over executive compensation practices.,Governance,Negative,High,manual,Company N
+The company released updated corporate governance guidelines.,Governance,Neutral,Medium,manual,Company O
+The company reported quarterly revenue growth above analyst expectations.,Non-ESG,Positive,Low,manual,Company P
+The firm launched a new mobile application for retail customers.,Non-ESG,Neutral,Low,manual,Company Q
+The company opened new stores in several Asian markets.,Non-ESG,Neutral,Low,manual,Company R
+The company announced a share buyback program.,Non-ESG,Positive,Low,manual,Company S
+The company reported lower sales due to weak consumer demand.,Non-ESG,Negative,Low,manual,Company T
